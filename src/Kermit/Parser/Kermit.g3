@@ -8,8 +8,10 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL; FUNC='function'; RETURN='return';
-	ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/';
+	BLOCK; ARGS; CALL;
+	FUNC='function'; RETURN='return'; IF='if'; // Keywords
+	EQ='=='; LT='<'; BT='>'; // Logical (TODO: Add more logical tokens)
+	ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
 
 @lexer::namespace{Parser}
@@ -29,8 +31,8 @@ tokens {
 
 public
 program
-	: (functionDefinition|statement)+ EOF
-	  -> ^(BLOCK statement+)
+	: (functionDefinition|exstatement)+ EOF
+	  -> ^(BLOCK exstatement+)
 	;
 
 functionDefinition
@@ -61,15 +63,20 @@ vardef
 	;
 
 slist
-	: NL* '{' statement* '}' NL*	-> ^(BLOCK statement*)
-	| statement						-> ^(BLOCK statement)
+	: NL* '{' exstatement+ '}' NL	-> ^(BLOCK exstatement+)
+	| NL? statement						-> ^(BLOCK statement)
+	;
+
+exstatement
+	: statement
+	| NL		->
 	;
 
 statement
 	: qid '=' expr NL	-> ^('=' qid expr)
 	| 'return' expr NL	-> ^('return' expr)
+	| 'if' expr c=slist ('else' el=slist)?	-> ^('if' expr $c $el?)
 	| call NL			-> call
-	| NL				->
 	;
 
 call
@@ -78,7 +85,7 @@ call
 }
 	: name=ID '(' (expr (',' expr)*)? ')' -> ^(CALL ID expr*) ;
 
-expr: addexpr ;
+expr: addexpr (('=='|'<'|'>')^ addexpr)? ;
 
 addexpr
 	: mulexpr (('+'|'-')^ mulexpr)*
