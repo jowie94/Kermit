@@ -9,7 +9,7 @@ options {
 
 tokens {
 	BLOCK; ARGS; CALL;
-	FUNC='function'; RETURN='return'; IF='if'; // Keywords
+	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; // Keywords
 	EQ='=='; LT='<'; BT='>'; // Logical (TODO: Add more logical tokens)
 	ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
@@ -64,19 +64,20 @@ vardef
 
 slist
 	: NL* '{' exstatement+ '}' NL	-> ^(BLOCK exstatement+)
-	| NL? statement						-> ^(BLOCK statement)
+	| NL? statement					-> ^(BLOCK statement)
 	;
 
-exstatement
+exstatement // Extended statements (include newline)
 	: statement
 	| NL		->
 	;
 
-statement
-	: qid '=' expr NL	-> ^('=' qid expr)
-	| 'return' expr NL	-> ^('return' expr)
+statement // Normal statements
+	: qid '=' expr NL		-> ^('=' qid expr)
+	| 'return' expr NL		-> ^('return' expr)
 	| 'if' expr c=slist ('else' el=slist)?	-> ^('if' expr $c $el?)
-	| call NL			-> call
+	| 'while' expr slist	-> ^('while' expr slist)
+	| call NL				-> call
 	;
 
 call
