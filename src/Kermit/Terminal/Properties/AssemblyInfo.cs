@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Kermit Parser")]
+[assembly: AssemblyTitle("Terminal")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Joel Lopez")]
-[assembly: AssemblyProduct("Parser")]
-[assembly: AssemblyCopyright("Copyright © Joel Lopez 2016")]
+[assembly: AssemblyCompany("HP Inc.")]
+[assembly: AssemblyProduct("Terminal")]
+[assembly: AssemblyCopyright("Copyright © HP Inc. 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f1539a78-4966-4854-8990-c914eb839b2a")]
+[assembly: Guid("6893f112-86ae-4ca0-b039-5b6808823248")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -1,0 +1,91 @@
+﻿grammar Kermit;
+
+options {
+	language=CSharp3;
+	TokenLabelType=CommonToken;
+	output=AST;
+	ASTLabelType=KermitAST;
+}
+
+tokens {
+	BLOCK; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/';
+}
+
+@lexer::namespace{Parser}
+@parser::namespace{Parser}
+
+@members {
+	IScope currentScope;
+	public KermitParser(ITokenStream input, IScope globalScope) : this(input)
+	{
+		currentScope = globalScope;
+	}
+}
+
+/*
+ * Parser Rules
+ */
+
+public
+program
+	: (statement)+ EOF
+	  -> ^(BLOCK statement+)
+	;
+
+statement
+	: qid '=' expr NL	-> ^('=' qid expr)
+	| NL				->
+	;
+
+expr: addexpr ;
+
+addexpr
+	: mulexpr (('+'|'-')^ mulexpr)*
+	;
+
+mulexpr
+	: atom (('*'|'/')^ atom)*
+	;
+
+atom
+	: INT
+	| CHAR
+	| FLOAT
+	| STRING
+	| qid
+	| '(' expr ')' -> expr
+	;
+
+qid : ID; // Can't be resolved until runtime
+
+
+/*
+ * Lexer Rules
+ */
+
+WS	:   (' '|'\t') {$channel=Hidden;};
+
+NL	:	'\r'? '\n' ;
+
+ID  :   LETTER (LETTER | '0'..'9')*  ;
+
+fragment
+LETTER
+	:   ('a'..'z' | 'A'..'Z')
+	;
+
+CHAR:	'\'' . '\'' ;
+
+STRING:	'\"' .* '\"' ;
+
+INT :   '0'..'9'+ ;
+
+FLOAT
+	:	INT '.' INT*
+	|	'.' INT+
+	;
+
+SL_COMMENT
+	:   '//' ~('\r'|'\n')* {$channel=Hidden;}
+	|	'/*' ('\w'|'\W')* '*/' {$channel=Hidden;}
+	;
