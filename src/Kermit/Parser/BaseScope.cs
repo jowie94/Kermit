@@ -8,14 +8,14 @@ using Parser;
 
 namespace Terminal
 {
-    internal abstract class BaseScope : IScope
+    public abstract class BaseScope : IScope
     {
         public string ScopeName { get; protected set; }
         public IScope EnclosingScope { get; private set; }
 
         IDictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
 
-        internal BaseScope(IScope parent)
+        protected BaseScope(IScope parent)
         {
             EnclosingScope = parent;
         }

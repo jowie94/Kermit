@@ -46,12 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseScope.cs" />
+    <Compile Include="FunctionSymbol.cs" />
     <Compile Include="IScope.cs" />
     <Compile Include="Kermit.g3.lexer.cs" />
     <Compile Include="KermitErrorNode.cs" />
     <Compile Include="Kermit.g3.parser.cs" />
     <Compile Include="KermitAST.cs" />
+    <Compile Include="LocalScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScopedSymbol.cs" />
     <Compile Include="Symbol.cs" />
     <Compile Include="VariableSymbol.cs" />
   </ItemGroup>

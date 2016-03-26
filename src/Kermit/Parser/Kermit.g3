@@ -1,4 +1,4 @@
-﻿grammar Kermit;
+grammar Kermit;
 
 options {
 	language=CSharp3;
@@ -8,7 +8,8 @@ options {
 }
 
 tokens {
-	BLOCK; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/';
+	BLOCK; ARGS; CALL; FUNC='function';
+	ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/';
 }
 
 @lexer::namespace{Parser}
@@ -28,14 +29,53 @@ tokens {
 
 public
 program
-	: (statement)+ EOF
+	: (functionDefinition|statement)+ EOF
 	  -> ^(BLOCK statement+)
+	;
+
+functionDefinition
+	: 'function' ID
+	 {
+		FunctionSymbol fs = new FunctionSymbol($ID.text, currentScope);
+		currentScope.Define(fs);
+		currentScope = fs;
+	 }
+	 '(' (vardef (',' vardef)* )? ')'
+	 {currentScope = new LocalScope(fs);}
+	 slist
+	 {
+		fs.BlockAST = $slist.tree;
+		currentScope = currentScope.EnclosingScope;
+		currentScope = currentScope.EnclosingScope;
+	 }
+	 ->
+	;
+
+vardef
+	: ID
+	 {
+		$ID.tree.Scope = currentScope;
+		VariableSymbol vs = new VariableSymbol($ID.text);
+		currentScope.Define(vs);
+	 }
+	;
+
+slist
+	: NL* '{' statement* '}' NL*	-> ^(BLOCK statement*)
+	| statement						-> ^(BLOCK statement)
 	;
 
 statement
 	: qid '=' expr NL	-> ^('=' qid expr)
+	| call NL			-> call
 	| NL				->
 	;
+
+call
+@after {
+	$call.tree.Scope = currentScope;
+}
+	: name=ID '(' (expr (',' expr)*)? ')' -> ^(CALL ID expr*) ;
 
 expr: addexpr ;
 
@@ -53,6 +93,7 @@ atom
 	| FLOAT
 	| STRING
 	| qid
+	| call
 	| '(' expr ')' -> expr
 	;
 
