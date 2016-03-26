@@ -8,7 +8,7 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL; FUNC='function';
+	BLOCK; ARGS; CALL; FUNC='function'; RETURN='return';
 	ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/';
 }
 
@@ -67,6 +67,7 @@ slist
 
 statement
 	: qid '=' expr NL	-> ^('=' qid expr)
+	| 'return' expr NL	-> ^('return' expr)
 	| call NL			-> call
 	| NL				->
 	;
