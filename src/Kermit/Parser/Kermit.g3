@@ -31,8 +31,8 @@ tokens {
 
 public
 program
-	: (functionDefinition|exstatement)+ EOF
-	  -> ^(BLOCK exstatement+)
+	: (functionDefinition|statementOrNL)+ EOF
+	  -> ^(BLOCK statementOrNL*)
 	;
 
 functionDefinition
@@ -44,9 +44,9 @@ functionDefinition
 	 }
 	 '(' (vardef (',' vardef)* )? ')'
 	 {currentScope = new LocalScope(fs);}
-	 slist
+	 multipleStatements
 	 {
-		fs.BlockAST = $slist.tree;
+		fs.BlockAST = $multipleStatements.tree;
 		currentScope = currentScope.EnclosingScope;
 		currentScope = currentScope.EnclosingScope;
 	 }
@@ -62,12 +62,16 @@ vardef
 	 }
 	;
 
-slist
-	: NL* '{' exstatement+ '}' NL	-> ^(BLOCK exstatement+)
-	| NL? statement					-> ^(BLOCK statement)
+soms // Single or multiple statements
+	: NL* statement	-> ^(BLOCK statement)
+	| multipleStatements
 	;
 
-exstatement // Extended statements (include newline)
+multipleStatements
+	: NL* '{' statementOrNL* '}' NL	-> ^(BLOCK statementOrNL*)
+	;
+
+statementOrNL // Extended statements (include newline)
 	: statement
 	| NL		->
 	;
@@ -75,8 +79,8 @@ exstatement // Extended statements (include newline)
 statement // Normal statements
 	: qid '=' expr NL		-> ^('=' qid expr)
 	| 'return' expr NL		-> ^('return' expr)
-	| 'if' expr c=slist ('else' el=slist)?	-> ^('if' expr $c $el?)
-	| 'while' expr slist	-> ^('while' expr slist)
+	| 'if' expr c=soms ('else' el=soms)?	-> ^('if' expr $c $el?)
+	| 'while' expr soms		-> ^('while' expr soms)
 	| call NL				-> call
 	;
 
