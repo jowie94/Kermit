@@ -14,15 +14,27 @@ namespace Terminal
         public IScope EnclosingScope { get; private set; }
 
         IDictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
+        IDictionary<string, Symbol> tmpSymbols = new Dictionary<string, Symbol>();
 
         protected BaseScope(IScope parent)
         {
             EnclosingScope = parent;
         }
 
+        public void CommitScope()
+        {
+            tmpSymbols.ToList().ForEach(x => symbols.Add(x));
+            tmpSymbols.Clear();
+        }
+
+        public void RevertScope()
+        {
+            tmpSymbols.Clear();
+        }
+
         public void Define(Symbol sym)
         {
-            symbols.Add(sym.Name, sym);
+            tmpSymbols.Add(sym.Name, sym);
             sym.Scope = this;
         }
 
@@ -30,6 +42,7 @@ namespace Terminal
         {
             Symbol s;
             if (symbols.TryGetValue(name, out s)) return s;
+            if (tmpSymbols.TryGetValue(name, out s)) return s;
             return ParentScope != null ? ParentScope.Resolve(name) : null;
         }
 

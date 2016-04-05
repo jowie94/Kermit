@@ -54,6 +54,7 @@
     <Compile Include="Kermit.g3.parser.cs" />
     <Compile Include="KermitAST.cs" />
     <Compile Include="LocalScope.cs" />
+    <Compile Include="PartialStatement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScopedSymbol.cs" />
     <Compile Include="Symbol.cs" />
