@@ -1,6 +1,7 @@
 ﻿using System;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using Interpeter;
 using Parser;
 
 namespace Terminal
@@ -27,6 +28,33 @@ namespace Terminal
         }
 
         public static void Loop()
+        {
+            GlobalScope globalScope = new GlobalScope();
+            bool exit = false;
+            string input = "";
+            Interpreter interpreter = new Interpreter(globalScope);
+            while (!exit)
+            {
+                if (input == string.Empty)
+                    Console.Write("> ");
+                else
+                    Console.Write(".. ");
+                input += Console.ReadLine() + "\n";
+                try
+                {
+                    interpreter.Interpret(input);
+                    globalScope.CommitScope();
+                    input = "";
+                    Console.WriteLine(interpreter._globals);
+                }
+                catch (PartialStatement)
+                {
+                    globalScope.RevertScope();
+                }
+            }
+        }
+
+        public static void Loop2()
         {
             GlobalScope globalScope = new GlobalScope();
             bool exit = false;

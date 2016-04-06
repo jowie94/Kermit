@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C14919
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interpeter", "Interpeter\Interpeter.csproj", "{D4BF16F9-8C62-4F15-9FAC-159EA063D417}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{5720DAD4-59DD-4651-B7DC-CE0BA6709A6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5720DAD4-59DD-4651-B7DC-CE0BA6709A6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5720DAD4-59DD-4651-B7DC-CE0BA6709A6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4BF16F9-8C62-4F15-9FAC-159EA063D417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4BF16F9-8C62-4F15-9FAC-159EA063D417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4BF16F9-8C62-4F15-9FAC-159EA063D417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4BF16F9-8C62-4F15-9FAC-159EA063D417}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
