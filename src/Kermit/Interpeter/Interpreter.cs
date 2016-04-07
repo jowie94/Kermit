@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using Interpeter.Types;
 using Parser;
 
 namespace Interpeter
@@ -126,7 +127,7 @@ namespace Interpeter
             children?.ToList().ForEach(x => Execute((KermitAST) x));
         }
 
-        private object Execute(KermitAST tree)
+        private KElement Execute(KermitAST tree)
         {
             try
             {
@@ -145,13 +146,13 @@ namespace Interpeter
                     case KermitParser.DIV:
                         return Arithmetic(tree);
                     case KermitParser.INT:
-                        return int.Parse(tree.Text);
+                        return new KInt(int.Parse(tree.Text));
                     case KermitParser.CHAR:
-                        return tree.Text[1];
+                        return new KChar(tree.Text[1]);
                     case KermitParser.FLOAT:
-                        return float.Parse(tree.Text);
+                        return new KFloat(float.Parse(tree.Text));
                     case KermitParser.STRING:
-                        return tree.Text.Substring(1, tree.Text.Length - 2);
+                        return new KString(tree.Text.Substring(1, tree.Text.Length - 2));
                     case KermitParser.ID:
                         return Load(tree);
                     default:
@@ -170,7 +171,7 @@ namespace Interpeter
         {
             KermitAST lhs = (KermitAST) tree.GetChild(0);
             KermitAST expr = tree.GetChild(1) as KermitAST;
-            object value = Execute(expr);
+            KElement value = Execute(expr);
 
             if (value != null)
             {
@@ -182,7 +183,7 @@ namespace Interpeter
             }
         }
 
-        private object Load(KermitAST tree)
+        private KElement Load(KermitAST tree)
         {
             // TODO: check if DOT
 
@@ -193,51 +194,34 @@ namespace Interpeter
             return null;
         }
 
-        private object Add(KermitAST tree)
+        private KElement Add(KermitAST tree)
         {
-            object a = Execute((KermitAST)tree.GetChild(0));
-            object b = Execute((KermitAST)tree.GetChild(1));
+            KElement a = Execute((KermitAST)tree.GetChild(0));
+            KElement b = Execute((KermitAST)tree.GetChild(1));
 
-            if (a is string || b is string)
-                return a.ToString() + b.ToString();
+            if (a.Type == KType.String || b.Type == KType.String)
+                return new KString(a.Value.ToString() + b.Value.ToString());
             return Arithmetic(tree);
         }
 
-        private object Arithmetic(KermitAST tree)
+        private KElement Arithmetic(KermitAST tree)
         {
-            object a = Execute((KermitAST) tree.GetChild(0));
-            object b = Execute((KermitAST) tree.GetChild(1));
-            dynamic x = null;
-            dynamic y = null;
-
-            if (a is float || b is float)
+            KNumber a = (KNumber) Execute((KermitAST) tree.GetChild(0));
+            KNumber b = (KNumber) Execute((KermitAST) tree.GetChild(1));
+            switch (tree.Type)
             {
-                x = float.Parse(a.ToString());
-                y = float.Parse(b.ToString());
-            }
-            else if (a is int || b is int)
-            {
-                x = (int) a;
-                y = (int) b;
-            }
-
-            if (x != null)
-            {
-                switch (tree.Type)
-                {
-                    case KermitParser.ADD:
-                        return x + y;
-                    case KermitParser.SUB:
-                        return x - y;
-                    case KermitParser.MUL:
-                        return x*y;
-                    case KermitParser.DIV:
-                        return x/y;
-                }
+                case KermitParser.ADD:
+                    return a + b;
+                case KermitParser.SUB:
+                    return a - b;
+                case KermitParser.MUL:
+                    return a*b;
+                case KermitParser.DIV:
+                    return a/b;
             }
 
             // TODO: Maybe throw error?
-            return 0;
+            return null;
         }
 
         #region Convenience methods

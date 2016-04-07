@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Interpeter.Types;
 
 namespace Interpeter
 {
@@ -10,20 +11,20 @@ namespace Interpeter
     {
         string _name;
 
-        IDictionary<string, object> _members = new Dictionary<string, object>();
+        IDictionary<string, KElement> _members = new Dictionary<string, KElement>();
 
         public MemorySpace(string name)
         {
             _name = name;
         }
 
-        public object Get(string id)
+        public KElement Get(string id)
         {
-            object o;
+            KElement o;
             return _members.TryGetValue(id, out o) ? o : null;
         }
 
-        public void Put(string id, object value)
+        public void Put(string id, KElement value)
         {
             _members[id] = value;
         }
@@ -33,7 +34,7 @@ namespace Interpeter
             return $"{_name}: {string.Join(";", _members.Select(x => x.Key + "=" + x.Value?.ToString()))}";
         }
 
-        public object this[string id]
+        public KElement this[string id]
         {
             get { return Get(id); }
             set { Put(id, value); }

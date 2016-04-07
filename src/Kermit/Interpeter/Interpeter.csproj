@@ -49,6 +49,12 @@
     <Compile Include="Interpreter.cs" />
     <Compile Include="MemorySpace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\KChar.cs" />
+    <Compile Include="Types\KElement.cs" />
+    <Compile Include="Types\KFloat.cs" />
+    <Compile Include="Types\KInt.cs" />
+    <Compile Include="Types\KNumber.cs" />
+    <Compile Include="Types\KString.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\Parser.csproj">
