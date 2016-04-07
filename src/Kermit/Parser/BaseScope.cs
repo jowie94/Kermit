@@ -13,8 +13,8 @@ namespace Terminal
         public string ScopeName { get; protected set; }
         public IScope EnclosingScope { get; private set; }
 
-        IDictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
-        IDictionary<string, Symbol> tmpSymbols = new Dictionary<string, Symbol>();
+        IDictionary<string, Symbol> _symbols = new Dictionary<string, Symbol>();
+        IDictionary<string, Symbol> _tmpSymbols = new Dictionary<string, Symbol>();
 
         protected BaseScope(IScope parent)
         {
@@ -23,40 +23,37 @@ namespace Terminal
 
         public void CommitScope()
         {
-            tmpSymbols.ToList().ForEach(x => symbols.Add(x));
-            tmpSymbols.Clear();
+            _tmpSymbols.ToList().ForEach(x => _symbols.Add(x));
+            _tmpSymbols.Clear();
         }
 
         public void RevertScope()
         {
-            tmpSymbols.Clear();
+            _tmpSymbols.Clear();
         }
 
         public void Define(Symbol sym)
         {
-            tmpSymbols.Add(sym.Name, sym);
+            _tmpSymbols.Add(sym.Name, sym);
             sym.Scope = this;
         }
 
         public Symbol Resolve(string name)
         {
             Symbol s;
-            if (symbols.TryGetValue(name, out s)) return s;
-            if (tmpSymbols.TryGetValue(name, out s)) return s;
+            if (_symbols.TryGetValue(name, out s)) return s;
+            if (_tmpSymbols.TryGetValue(name, out s)) return s;
             return ParentScope != null ? ParentScope.Resolve(name) : null;
         }
 
-        public IScope ParentScope
-        {
-            get { return EnclosingScope; }
-        }
+        public IScope ParentScope => EnclosingScope;
 
         public override string ToString()
         {
             string s = "";
             if (EnclosingScope != null)
                 s = EnclosingScope.ToString() + "\n";
-            return s + ScopeName + " " + string.Join(";", symbols.Select(x => x.Key + "=" + x.Value.ToString()));
+            return s + ScopeName + " " + string.Join(";", _symbols.Select(x => x.Key + "=" + x.Value.ToString()));
         }
     }
 }
