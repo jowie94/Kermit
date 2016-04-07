@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Text;
@@ -137,14 +138,20 @@ namespace Interpeter
                     case KermitParser.ASSIGN:
                         Assign(tree);
                         break;
+                    case KermitParser.ADD:
+                        return Add(tree);
+                    case KermitParser.SUB:
+                    case KermitParser.MUL:
+                    case KermitParser.DIV:
+                        return Arithmetic(tree);
                     case KermitParser.INT:
                         return int.Parse(tree.Text);
                     case KermitParser.CHAR:
-                        return tree.Text[0];
+                        return tree.Text[1];
                     case KermitParser.FLOAT:
                         return float.Parse(tree.Text);
                     case KermitParser.STRING:
-                        return tree.Text;
+                        return tree.Text.Substring(1, tree.Text.Length - 2);
                     case KermitParser.ID:
                         return Load(tree);
                     default:
@@ -184,6 +191,53 @@ namespace Interpeter
                 return space[tree.Text];
             Listener.Error("No such variable " + tree.Text, tree.Token);
             return null;
+        }
+
+        private object Add(KermitAST tree)
+        {
+            object a = Execute((KermitAST)tree.GetChild(0));
+            object b = Execute((KermitAST)tree.GetChild(1));
+
+            if (a is string || b is string)
+                return a.ToString() + b.ToString();
+            return Arithmetic(tree);
+        }
+
+        private object Arithmetic(KermitAST tree)
+        {
+            object a = Execute((KermitAST) tree.GetChild(0));
+            object b = Execute((KermitAST) tree.GetChild(1));
+            dynamic x = null;
+            dynamic y = null;
+
+            if (a is float || b is float)
+            {
+                x = float.Parse(a.ToString());
+                y = float.Parse(b.ToString());
+            }
+            else if (a is int || b is int)
+            {
+                x = (int) a;
+                y = (int) b;
+            }
+
+            if (x != null)
+            {
+                switch (tree.Type)
+                {
+                    case KermitParser.ADD:
+                        return x + y;
+                    case KermitParser.SUB:
+                        return x - y;
+                    case KermitParser.MUL:
+                        return x*y;
+                    case KermitParser.DIV:
+                        return x/y;
+                }
+            }
+
+            // TODO: Maybe throw error?
+            return 0;
         }
 
         #region Convenience methods
