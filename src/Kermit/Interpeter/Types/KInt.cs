@@ -38,5 +38,10 @@ namespace Interpeter.Types
         {
             return Value;
         }
+
+        public static explicit operator KBool(KInt num)
+        {
+            return num.ToInt() != 0;
+        }
     }
 }

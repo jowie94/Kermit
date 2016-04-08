@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    class KChar : KElement
+    class KChar : KElement, IComparable
     {
         public new char Value;
 
@@ -27,6 +27,24 @@ namespace Interpeter.Types
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             return Equals((KChar) obj);
+        }
+
+        public int CompareTo(object obj)
+        {
+            KChar ch = obj as KChar;
+            if (ch != null)
+                return Value.CompareTo(ch.Value);
+            throw new ArgumentException("Object is not of type character");
+        }
+
+        public static implicit operator KChar(char ch)
+        {
+            return new KChar(ch);
+        }
+
+        public static implicit operator char(KChar ch)
+        {
+            return ch.Value;
         }
     }
 }

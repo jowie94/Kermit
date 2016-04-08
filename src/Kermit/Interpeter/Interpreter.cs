@@ -139,20 +139,34 @@ namespace Interpeter
                     case KermitParser.ASSIGN:
                         Assign(tree);
                         break;
+                    case KermitParser.IF:
+                        IfStatement(tree);
+                        break;
+                    // Arithmetic operations
                     case KermitParser.ADD:
                         return Add(tree);
                     case KermitParser.SUB:
                     case KermitParser.MUL:
                     case KermitParser.DIV:
                         return Arithmetic(tree);
+                    // Logic operations
+                    case KermitParser.EQ:
+                        return Eq(tree);
+                    case KermitParser.LT:
+                        return Lt(tree);
+                    case KermitParser.BT:
+                        return Bt(tree);
+                    // Keep types at the bottom
+                    case KermitParser.NUM:
+                        return (KNumber) Execute((KermitAST) tree.GetChild(0))*(tree.ChildCount == 2 ? -1 : 1);
                     case KermitParser.INT:
-                        return new KInt(int.Parse(tree.Text));
+                        return (KInt) int.Parse(tree.Text);
                     case KermitParser.CHAR:
-                        return new KChar(tree.Text[1]);
+                        return (KChar) tree.Text[1];
                     case KermitParser.FLOAT:
-                        return new KFloat(float.Parse(tree.Text));
+                        return (KFloat) float.Parse(tree.Text);
                     case KermitParser.STRING:
-                        return new KString(tree.Text.Substring(1, tree.Text.Length - 2));
+                        return (KString) tree.Text.Substring(1, tree.Text.Length - 2);
                     case KermitParser.ID:
                         return Load(tree);
                     default:
@@ -165,6 +179,19 @@ namespace Interpeter
             }
 
             return null;
+        }
+
+        private void IfStatement(KermitAST tree)
+        {
+            KermitAST condition = (KermitAST) tree.GetChild(0);
+            KermitAST code = (KermitAST) tree.GetChild(1);
+            KermitAST elseCode = tree.ChildCount == 3 ? (KermitAST) tree.GetChild(3) : null;
+
+            KBool cres = KBool.ToKBool(Execute(condition));
+            if (cres)
+                Execute(code);
+            else if (elseCode != null)
+                Execute(elseCode);
         }
 
         private void Assign(KermitAST tree)
@@ -192,6 +219,36 @@ namespace Interpeter
                 return space[tree.Text];
             Listener.Error("No such variable " + tree.Text, tree.Token);
             return null;
+        }
+
+        private KBool Eq(KermitAST tree)
+        {
+            KElement a = Execute((KermitAST) tree.GetChild(0));
+            KElement b = Execute((KermitAST) tree.GetChild(1));
+
+            return a == b;
+        }
+
+        private KBool Lt(KermitAST tree)
+        {
+            return Compare(tree) < 0;
+        }
+
+        private KBool Bt(KermitAST tree)
+        {
+            return Compare(tree) > 0;
+        }
+
+        private int Compare(KermitAST tree)
+        {
+            KElement a = Execute((KermitAST)tree.GetChild(0));
+            KElement b = Execute((KermitAST)tree.GetChild(1));
+
+            if (a is IComparable && b is IComparable)
+            {
+                return ((IComparable)a).CompareTo(b);
+            }
+            throw new ArgumentException("Types are not comparable");
         }
 
         private KElement Add(KermitAST tree)

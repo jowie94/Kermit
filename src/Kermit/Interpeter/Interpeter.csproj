@@ -49,6 +49,7 @@
     <Compile Include="Interpreter.cs" />
     <Compile Include="MemorySpace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\KBool.cs" />
     <Compile Include="Types\KChar.cs" />
     <Compile Include="Types\KElement.cs" />
     <Compile Include="Types\KFloat.cs" />

@@ -11,7 +11,7 @@ tokens {
 	BLOCK; ARGS; CALL;
 	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; // Keywords
 	EQ='=='; LT='<'; BT='>'; // Logical (TODO: Add more logical tokens)
-	ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
+	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
 
 @lexer::namespace{Parser}
@@ -101,9 +101,8 @@ mulexpr
 	;
 
 atom
-	: INT
+	: '-'? n=(INT|FLOAT) -> ^(NUM $n '-'?)
 	| CHAR
-	| FLOAT
 	| STRING
 	| qid
 	| call

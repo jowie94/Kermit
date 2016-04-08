@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    class KString : KElement
+    public class KString : KElement, IComparable
     {
         public new string Value;
 
@@ -32,6 +32,19 @@ namespace Interpeter.Types
         public static explicit operator KString(string str)
         {
             return new KString(str);
+        }
+
+        public static implicit operator string(KString kstr)
+        {
+            return kstr.Value;
+        }
+
+        public int CompareTo(object obj)
+        {
+            KString ch = obj as KString;
+            if (ch != null)
+                return string.Compare(Value, ch.Value, StringComparison.Ordinal);
+            throw new ArgumentException("Object is not of type character");
         }
     }
 }

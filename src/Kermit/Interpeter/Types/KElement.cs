@@ -11,6 +11,7 @@ namespace Interpeter.Types
         Int,
         Float,
         Char,
+        Bool,
         String,
         Object,
         Null
