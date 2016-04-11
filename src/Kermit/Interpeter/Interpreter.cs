@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using Interpeter.MemorySpaces;
 using Interpeter.Types;
 using Parser;
 
@@ -50,6 +51,7 @@ namespace Interpeter
         private KermitAST _root;
         public MemorySpace _globals = new MemorySpace("globals"); // TODO: Public just for debugging! MUST BE PRIVATE
         private MemorySpace _currentSpace;
+        private Stack<FunctionSpace> _stack = new Stack<FunctionSpace>();  
         #endregion
 
         public IInterpreterListener Listener
@@ -75,6 +77,8 @@ namespace Interpeter
         }
 
         public Interpreter(IScope globalScope) : this(globalScope, new DummyListener()) {}
+
+        public readonly ReturnValue SharedReturnValue = new ReturnValue();
 
         public Interpreter(IScope globalScope, IInterpreterListener listener)
         {
@@ -144,6 +148,11 @@ namespace Interpeter
                     case KermitParser.IF:
                         IfStatement(tree);
                         break;
+                    case KermitParser.RETURN:
+                        Return(tree);
+                        break;
+                    case KermitParser.CALL:
+                        return Call(tree);
                     // Arithmetic operations
                     case KermitParser.ADD:
                         return Add(tree);
@@ -187,12 +196,69 @@ namespace Interpeter
                         throw new InvalidOperationException("Node " + tree.Text + "<" + tree.Type + "> not handled");
                 }
             }
+            catch (ReturnValue)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 Listener.Error("Problem executing: " + tree.ToStringTree(), e);
             }
 
             return null;
+        }
+
+        private void Return(KermitAST tree)
+        {
+            SharedReturnValue.Value = Execute((KermitAST) tree.GetChild(0));
+            throw SharedReturnValue;
+        }
+
+        private KElement Call(KermitAST tree)
+        {
+            string fName = tree.GetChild(0).Text;
+            FunctionSymbol fSymbol = (FunctionSymbol) tree.Scope.Resolve(fName);
+            if (fSymbol == null)
+            {
+                Listener.Error($"Function name {fName} is not defined");
+                return null;
+            }
+
+            FunctionSpace fSpace = new FunctionSpace(fSymbol);
+            MemorySpace savedSpace = _currentSpace;
+            _currentSpace = fSpace;
+
+            int argCount = tree.ChildCount - 1;
+
+            if (fSymbol.Arguments == null && argCount > 0 ||
+                fSymbol.Arguments != null && argCount != fSymbol.Arguments.Count)
+            {
+                Listener.Error($"Function {fName}: argument list mismatch");
+                return null;
+            }
+
+            int i = 0;
+            foreach (Symbol argSymbol in fSymbol.Arguments.Values)
+            {
+                VariableSymbol argument = (VariableSymbol) argSymbol;
+                KermitAST argumentTree = (KermitAST) tree.GetChild(i++);
+                KElement argumentValue = Execute(argumentTree);
+                fSpace[argument.Name] = argumentValue;
+            }
+
+            KElement result = null;
+            _stack.Push(fSpace);
+            try
+            {
+                Execute(fSymbol.BlockAST);
+            }
+            catch (ReturnValue returnValue)
+            {
+                result = returnValue.Value;
+            }
+            _stack.Pop();
+            _currentSpace = savedSpace;
+            return result;
         }
 
         private KBool Not(KermitAST tree)

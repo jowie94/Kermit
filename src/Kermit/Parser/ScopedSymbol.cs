@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Parser
 {
-    internal abstract class ScopedSymbol : Symbol, IScope
+    public abstract class ScopedSymbol : Symbol, IScope
     {
         public IScope EnclosingScope { get; private set; }
 

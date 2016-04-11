@@ -6,21 +6,22 @@ using System.Threading.Tasks;
 
 namespace Parser
 {
-    internal class FunctionSymbol : ScopedSymbol
+    public class FunctionSymbol : ScopedSymbol
     {
-        IDictionary<string, Symbol> _formalArgs = new Dictionary<string, Symbol>();
-        internal KermitAST BlockAST;
+        public IDictionary<string, Symbol> Arguments { get; } = new Dictionary<string, Symbol>();
+
+        public KermitAST BlockAST;
 
         public new string Name
         {
-            get { return base.Name + '(' + _formalArgs.Keys.ToString() + ')'; }
+            get { return base.Name + '(' + Arguments.Keys.ToString() + ')'; }
         }
 
         public FunctionSymbol(string name, IScope parentScope) : base(name, parentScope) {}
 
         public override IDictionary<string, Symbol> GetMembers()
         {
-            return _formalArgs;
+            return Arguments;
         }
     }
 }

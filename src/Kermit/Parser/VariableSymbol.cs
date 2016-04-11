@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Parser
 {
-    class VariableSymbol : Symbol
+    public class VariableSymbol : Symbol
     {
         public VariableSymbol(string name) : base(name) {}
     }

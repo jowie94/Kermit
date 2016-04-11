@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Interpeter.Types;
 
-namespace Interpeter
+namespace Interpeter.MemorySpaces
 {
     public class MemorySpace
     {
