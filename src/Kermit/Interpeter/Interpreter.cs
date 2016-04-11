@@ -87,6 +87,7 @@ namespace Interpeter
             _listener = listener;
 
             _parser = new KermitParser(null, _globalScope) {TreeAdaptor = new KermitAdaptor()};
+            //_parser.TraceDestination = Console.Error;
 
             _currentSpace = _globals;
         }
@@ -98,7 +99,7 @@ namespace Interpeter
 
         public void Interpret(string input)
         {
-            ANTLRStringStream stream = new ANTLRStringStream(input, "Terminal");
+            ANTLRStringStream stream = new ANTLRStringStream(input, "<stdin>");
             KermitLexer lexer = new KermitLexer(stream);
             TokenRewriteStream tokens = new TokenRewriteStream(lexer);
             _parser.TokenStream = tokens;
@@ -112,7 +113,8 @@ namespace Interpeter
             }
             else
             {
-                throw new SystemException(); // TODO: Better exception
+                //throw new InterpreterException($"{_parser.NumberOfSyntaxErrors} syntax errors"); // TODO: Better exception
+                Listener.Error($"{_parser.NumberOfSyntaxErrors} syntax errors");
             }
         }
 

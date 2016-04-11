@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using Antlr.Runtime;
+using Parser.Exceptions;
 
 namespace Parser
 {
@@ -10,10 +12,12 @@ namespace Parser
             if (e.Token.Type == EOF)
                 throw new PartialStatement();
             base.ReportError(e);
-            Console.WriteLine(e.GetType());
-            Console.WriteLine(e.Token.Type);
-            Console.WriteLine("Error in parser at line " + e.Line + ":" + e.CharPositionInLine);
-            Console.WriteLine(e.Message);
+            //Console.WriteLine(e.GetType());
+            //Console.WriteLine(e.Token.Type);
+            //Console.WriteLine(e.Message);
+            //Console.WriteLine($"Error in parser at line {e.Line}: {e.CharPositionInLine}\n{GetErrorMessage(e, tokenNames)}");
+            string msg = $"File: {SourceName} at line {e.Line}:{e.CharPositionInLine}\nSyntaxError: {GetErrorMessage(e, tokenNames)}";
+            throw new ParserException(msg, e);
         }
     }
 }

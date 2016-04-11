@@ -3,6 +3,7 @@ using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Interpeter;
 using Parser;
+using Parser.Exceptions;
 
 namespace Terminal
 {
@@ -27,12 +28,37 @@ namespace Terminal
             }
         }
 
+        private class SimpleListener : IInterpreterListener
+        {
+            public void Info(string msg)
+            {
+                Console.WriteLine(msg);
+            }
+
+            public void Error(string msg)
+            {
+                Console.Error.WriteLine(msg);
+            }
+
+            public void Error(string msg, Exception e)
+            {
+                Console.Error.WriteLine(msg);
+                Console.Error.WriteLine(e.Message);
+            }
+
+            public void Error(string msg, IToken token)
+            {
+                Console.Error.WriteLine(msg);
+                Console.Error.WriteLine("Token: " + token.Text);
+            }
+        }
+
         public static void Loop()
         {
             GlobalScope globalScope = new GlobalScope();
             bool exit = false;
             string input = "";
-            Interpreter interpreter = new Interpreter(globalScope);
+            Interpreter interpreter = new Interpreter(globalScope, new SimpleListener());
             while (!exit)
             {
                 if (input == string.Empty)
@@ -50,6 +76,12 @@ namespace Terminal
                 catch (PartialStatement)
                 {
                     globalScope.RevertScope();
+                }
+                catch (ParserException e)
+                {
+                    Console.Error.WriteLine(e.Message);
+                    globalScope.RevertScope();
+                    input = "";
                 }
             }
         }
@@ -75,7 +107,7 @@ namespace Terminal
                 try
                 {
                     AstParserRuleReturnScope<KermitAST, CommonToken> result = parser.program();
-                    var tree = (CommonTree)result.Tree;
+                    var tree = (CommonTree) result.Tree;
                     DotTreeGenerator gen = new DotTreeGenerator();
                     Console.WriteLine("{0}", gen.ToDot(tree));
                     input = "";
@@ -84,6 +116,10 @@ namespace Terminal
                     Console.WriteLine(globalScope.ToString());
                 }
                 catch (PartialStatement)
+                {
+                    globalScope.RevertScope();
+                }
+                catch (ParserException e)
                 {
                     globalScope.RevertScope();
                 }
