@@ -62,10 +62,20 @@ namespace Terminal
             while (!exit)
             {
                 if (input == string.Empty)
-                    Console.Write("> ");
+                {
+                    Console.Write(">> ");
+                    input = Console.ReadLine() + "\n";
+                }
                 else
+                {
+                    string tmp;
                     Console.Write(".. ");
-                input += Console.ReadLine() + "\n";
+                    while ((tmp = Console.ReadLine()) != "")
+                    {
+                        input += tmp + "\n";
+                        Console.Write(".. ");
+                    }
+                }
                 try
                 {
                     interpreter.Interpret(input);
