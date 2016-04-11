@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,5 +42,12 @@ namespace Interpeter.Types
         {
             return $"<({GetType().Name}) {GetType().GetField("Value").GetValue(this)}>";
         }
+
+        public static bool operator !(KElement element)
+        {
+            return element.Not();
+        }
+
+        protected abstract bool Not();
     }
 }

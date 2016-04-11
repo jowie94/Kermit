@@ -46,5 +46,10 @@ namespace Interpeter.Types
                 return string.Compare(Value, ch.Value, StringComparison.Ordinal);
             throw new ArgumentException("Object is not of type character");
         }
+
+        protected override bool Not()
+        {
+            return !(KBool)this;
+        }
     }
 }

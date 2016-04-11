@@ -152,11 +152,23 @@ namespace Interpeter
                     // Logic operations
                     case KermitParser.EQ:
                         return Eq(tree);
+                    case KermitParser.NE:
+                        return (KBool) !Eq(tree);
                     case KermitParser.LT:
                         return Lt(tree);
                     case KermitParser.BT:
                         return Bt(tree);
+                    case KermitParser.LTE:
+                        return (KBool) !Bt(tree);
+                    case KermitParser.BTE:
+                        return (KBool) !Lt(tree);
+                    case KermitParser.NOT:
+                        return Not(tree);
                     // Keep types at the bottom
+                    case KermitParser.TRUE:
+                        return KBool.True;
+                    case KermitParser.FALSE:
+                        return KBool.False;
                     case KermitParser.NUM:
                         return (KNumber) Execute((KermitAST) tree.GetChild(0))*(tree.ChildCount == 2 ? -1 : 1);
                     case KermitParser.INT:
@@ -179,6 +191,12 @@ namespace Interpeter
             }
 
             return null;
+        }
+
+        private KBool Not(KermitAST tree)
+        {
+            KElement inner = Execute((KermitAST) tree.GetChild(0));
+            return !inner;
         }
 
         private void IfStatement(KermitAST tree)

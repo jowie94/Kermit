@@ -60,6 +60,11 @@ namespace Interpeter.Types
             return num.ToFloat();
         }
 
+        protected override bool Not()
+        {
+            return !(KBool)this;
+        }
+
         public int CompareTo(object obj)
         {
             KNumber num = obj as KNumber;

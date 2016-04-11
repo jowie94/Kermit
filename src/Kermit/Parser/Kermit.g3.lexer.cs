@@ -9,6 +9,7 @@ namespace Parser
         {
             base.ReportError(e);
             Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine);
+            throw e;
         }
     }
 }

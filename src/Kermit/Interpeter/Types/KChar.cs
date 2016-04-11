@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    class KChar : KElement, IComparable
+    public class KChar : KElement, IComparable
     {
         public new char Value;
 
@@ -45,6 +45,11 @@ namespace Interpeter.Types
         public static implicit operator char(KChar ch)
         {
             return ch.Value;
+        }
+
+        protected override bool Not()
+        {
+            return !(KBool) this;
         }
     }
 }

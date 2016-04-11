@@ -59,12 +59,30 @@ namespace Interpeter.Types
 
         public static implicit operator KBool(KString str)
         {
-            return new KBool(bool.Parse(str));
+            return str.Value.Length > 0;
         }
 
         public static implicit operator KBool(KNumber num)
         {
             return num.ToInt() != 0;
+        }
+
+        public static implicit operator KBool(KChar ch)
+        {
+            return ch.Value != null;
+        }
+
+        public static bool operator !(KBool element)
+        {
+            return !element.Value;
+        }
+
+        public static KBool True => new KBool(true);
+        public static KBool False => new KBool(false);
+
+        protected override bool Not()
+        {
+            return !this;
         }
     }
 }
