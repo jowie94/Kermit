@@ -148,6 +148,9 @@ namespace Interpeter
                     case KermitParser.IF:
                         IfStatement(tree);
                         break;
+                    case KermitParser.WHILE:
+                        WhileLoop(tree);
+                        break;
                     case KermitParser.RETURN:
                         Return(tree);
                         break;
@@ -206,6 +209,19 @@ namespace Interpeter
             }
 
             return null;
+        }
+
+        private void WhileLoop(KermitAST tree)
+        {
+            KermitAST condition = (KermitAST) tree.GetChild(0);
+            KermitAST code = (KermitAST) tree.GetChild(1);
+
+            KBool cond = (KBool) Execute(condition);
+            while (cond)
+            {
+                Execute(code);
+                cond = (KBool) Execute(condition);
+            }
         }
 
         private void Return(KermitAST tree)
