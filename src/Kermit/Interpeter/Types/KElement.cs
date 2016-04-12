@@ -30,7 +30,7 @@ namespace Interpeter.Types
 
         public static bool operator ==(KElement obj1, KElement obj2)
         {
-            return obj1?.Equals(obj2) ?? false;
+            return ReferenceEquals(obj1, obj2) || (obj1?.Equals(obj2) ?? false);
         }
 
         public static bool operator !=(KElement obj1, KElement obj2)
