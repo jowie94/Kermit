@@ -151,6 +151,9 @@ namespace Interpeter
                     case KermitParser.WHILE:
                         WhileLoop(tree);
                         break;
+                    case KermitParser.FOR:
+                        ForLoop(tree);
+                        break;
                     case KermitParser.RETURN:
                         Return(tree);
                         break;
@@ -216,12 +219,25 @@ namespace Interpeter
             KermitAST condition = (KermitAST) tree.GetChild(0);
             KermitAST code = (KermitAST) tree.GetChild(1);
 
+            // TODO: Private memory space
             KBool cond = (KBool) Execute(condition);
             while (cond)
             {
                 Execute(code);
                 cond = (KBool) Execute(condition);
             }
+        }
+
+        private void ForLoop(KermitAST tree)
+        {
+            KermitAST begin = (KermitAST) tree.GetChild(0);
+            KermitAST condition = (KermitAST) tree.GetChild(1);
+            KermitAST action = (KermitAST) tree.GetChild(2);
+            KermitAST code = (KermitAST) tree.GetChild(3);
+
+            // TODO: Private memory space
+            for(Execute(begin); (KBool) Execute(condition); Execute(action))
+                Execute(code);
         }
 
         private void Return(KermitAST tree)

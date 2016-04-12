@@ -9,7 +9,7 @@ options {
 
 tokens {
 	BLOCK; ARGS; CALL;
-	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; // Keywords
+	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; // Keywords
 	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
@@ -77,11 +77,16 @@ statementOrNL // Extended statements (include newline)
 	;
 
 statement // Normal statements
-	: qid '=' expr NL		-> ^('=' qid expr)
+	: equalOrCall NL		-> equalOrCall
 	| 'return' expr NL		-> ^('return' expr)
-	| 'if' expr c=soms ('else' el=soms)?	-> ^('if' expr $c $el?)
-	| 'while' expr soms		-> ^('while' expr soms)
-	| call NL				-> call
+	| 'if' '(' expr ')' c=soms ('else' el=soms)?			-> ^('if' expr $c $el?)
+	| 'while' '(' expr ')' soms								-> ^('while' expr soms)
+	| 'for' '(' beg=equalOrCall ';' cond=expr ';' wh=equalOrCall ')' soms	-> ^('for' $beg $cond $wh soms)
+	;
+
+equalOrCall
+	: qid '=' expr	-> ^('=' qid expr)
+	| call
 	;
 
 call
