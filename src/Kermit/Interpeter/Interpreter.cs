@@ -159,6 +159,8 @@ namespace Interpeter
                         break;
                     case KermitParser.CALL:
                         return Call(tree);
+                    case KermitParser.NEW:
+                        return Instance(tree);
                     // Arithmetic operations
                     case KermitParser.ADD:
                         return Add(tree);
@@ -196,6 +198,7 @@ namespace Interpeter
                         return (KFloat) float.Parse(tree.Text);
                     case KermitParser.STRING:
                         return (KString) tree.Text.Substring(1, tree.Text.Length - 2);
+                    case KermitParser.DOT:
                     case KermitParser.ID:
                         return Load(tree);
                     default:
@@ -299,6 +302,13 @@ namespace Interpeter
             return result;
         }
 
+        private KElement Instance(KermitAST tree)
+        {
+            string objName = tree.GetChild(0).Text;
+
+            throw new NotImplementedException("Instances are currently not supported");
+        }
+
         private KBool Not(KermitAST tree)
         {
             KElement inner = Execute((KermitAST) tree.GetChild(0));
@@ -326,22 +336,28 @@ namespace Interpeter
 
             if (value != null)
             {
-                // TODO: check if DOT
-
-                MemorySpace space = GetSpaceWithSymbol(lhs.Text);
-                if (space == null) space = _currentSpace;
-                space[lhs.Text] = value;
+                if (lhs.Type == KermitParser.DOT)
+                {
+                    FieldAssign(lhs, value);
+                }
+                else
+                {
+                    MemorySpace space = GetSpaceWithSymbol(lhs.Text);
+                    if (space == null) space = _currentSpace;
+                    space[lhs.Text] = value;
+                }
             }
         }
 
         private KElement Load(KermitAST tree)
         {
-            // TODO: check if DOT
+            if (tree.Type == KermitParser.DOT)
+                return FieldLoad(tree);
 
             MemorySpace space = GetSpaceWithSymbol(tree.Text);
             if (space != null)
                 return space[tree.Text];
-            Listener.Error("No such variable " + tree.Text, tree.Token);
+            Listener.Error("No such variable " + tree.Text, tree.Token); // TODO: Should throw exception
             return null;
         }
 
@@ -415,6 +431,25 @@ namespace Interpeter
             if (_stack.Count > 0 && !ReferenceEquals(_stack.Peek(), _currentSpace) && _stack.Peek().Contains(id))
                 return _stack.Peek();
             return _globals.Contains(id) ? _globals : null;
+        }
+
+        private KElement FieldLoad(KermitAST tree)
+        {
+            KermitAST leftExpr = (KermitAST) tree.GetChild(0);
+            KermitAST nodeId = (KermitAST) tree.GetChild(1);
+            string id = nodeId.Text;
+
+            throw new NotImplementedException("Loading fields is currently not implemented");
+        }
+
+        private void FieldAssign(KermitAST tree, KElement value)
+        {
+            KermitAST obj = (KermitAST) tree.GetChild(0);
+            KermitAST field = (KermitAST) tree.GetChild(1);
+            String fieldName = field.Text;
+            KElement objLoad = Load(obj);
+            
+            throw new NotImplementedException("Writing fields is currently not implemented");
         }
 
         #endregion

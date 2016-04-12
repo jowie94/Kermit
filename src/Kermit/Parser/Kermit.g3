@@ -8,8 +8,8 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL;
-	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; // Keywords
+	BLOCK; ARGS; CALL; DOT='.';
+	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; NEW='new'; // Keywords
 	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
@@ -117,10 +117,20 @@ atom
 	| ('true'|'false')
 	| qid
 	| call
+	| instance
 	| '(' expr ')' -> expr
 	;
 
-qid : ID; // Can't be resolved until runtime
+instance
+@after {
+	KermitAST nameNode = (KermitAST) $instance.tree.GetChild(0);
+	nameNode.Scope = currentScope;
+}
+	:	'new' ID // TODO: Future improvement, support subclasses
+		-> ^('new' ID)
+	;
+
+qid :  ID ('.'^ ID)* ; // Can't be resolved until runtime
 
 
 /*
