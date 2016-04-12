@@ -27,6 +27,7 @@ namespace Parser
 
         public void Define(Symbol sym)
         {
+            // TODO: FIXME Return nicer exception
             GetMembers().Add(sym.Name, sym);
             sym.Scope = this;
         }

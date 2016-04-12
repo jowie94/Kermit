@@ -18,15 +18,20 @@ namespace Interpeter.MemorySpaces
             _name = name;
         }
 
-        public KElement Get(string id)
+        public virtual KElement Get(string id)
         {
             KElement o;
             return _members.TryGetValue(id, out o) ? o : null;
         }
 
-        public void Put(string id, KElement value)
+        public virtual void Put(string id, KElement value)
         {
             _members[id] = value;
+        }
+
+        public bool Contains(string id)
+        {
+            return _members.Keys.Contains(id);
         }
 
         public override string ToString()

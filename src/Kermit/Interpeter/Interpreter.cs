@@ -219,13 +219,16 @@ namespace Interpeter
             KermitAST condition = (KermitAST) tree.GetChild(0);
             KermitAST code = (KermitAST) tree.GetChild(1);
 
-            // TODO: Private memory space
+            ScopeSpace sp = new ScopeSpace("while", _currentSpace);
+            MemorySpace save = _currentSpace;
+            _currentSpace = sp;
             KBool cond = (KBool) Execute(condition);
             while (cond)
             {
                 Execute(code);
                 cond = (KBool) Execute(condition);
             }
+            _currentSpace = save;
         }
 
         private void ForLoop(KermitAST tree)
@@ -235,9 +238,12 @@ namespace Interpeter
             KermitAST action = (KermitAST) tree.GetChild(2);
             KermitAST code = (KermitAST) tree.GetChild(3);
 
-            // TODO: Private memory space
-            for(Execute(begin); (KBool) Execute(condition); Execute(action))
+            ScopeSpace sp = new ScopeSpace("while", _currentSpace);
+            MemorySpace save = _currentSpace;
+            _currentSpace = sp;
+            for (Execute(begin); (KBool) Execute(condition); Execute(action))
                 Execute(code);
+            _currentSpace = save;
         }
 
         private void Return(KermitAST tree)
@@ -402,8 +408,13 @@ namespace Interpeter
         #region Convenience methods
         private MemorySpace GetSpaceWithSymbol(string id)
         {
-            // TODO: Explore stack when functions added
-            return _globals[id] != null ? _globals : null;
+            // Check if the current scope contains the id (and it is not the global scope)
+            if (!ReferenceEquals(_currentSpace, _globals) && _currentSpace.Contains(id))
+                return _currentSpace;
+            // Check if the top of the stack contains the id (and it is not the current space)
+            if (_stack.Count > 0 && !ReferenceEquals(_stack.Peek(), _currentSpace) && _stack.Peek().Contains(id))
+                return _stack.Peek();
+            return _globals.Contains(id) ? _globals : null;
         }
 
         #endregion
