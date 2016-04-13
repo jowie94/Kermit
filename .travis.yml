@@ -1,2 +1,5 @@
 language: csharp
 solution: src/Kermit/Kermit.sln
+install:
+  - apt-get install -y libmono-microsoft-build2.0-cil
+  - nuget restore src/Kermit/Kermit.sln
