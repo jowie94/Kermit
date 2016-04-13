@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design.Serialization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Antlr.Runtime;
@@ -94,6 +95,15 @@ namespace Interpeter
             //_parser.TraceDestination = Console.Error;
 
             _currentSpace = _globals;
+
+            AddInternalNativeFunctions();
+        }
+
+        public void AddNativeFunction(string name, KFunction function)
+        {
+            function.Name = name;
+            NativeFunctionSymbol symbol = new NativeFunctionSymbol(name, _globalScope, function);
+            _globalScope.Define(symbol);
         }
 
         public void Interpret(ANTLRInputStream input)
@@ -291,7 +301,10 @@ namespace Interpeter
             _stack.Push(fSpace);
             try
             {
-                Execute(fSymbol.BlockAST);
+                if (fSymbol is NativeFunctionSymbol)
+                    ((NativeFunctionSymbol) fSymbol).NativeFunction.Execute();
+                else
+                    Execute(fSymbol.BlockAST);
             }
             catch (ReturnValue returnValue)
             {
@@ -450,6 +463,20 @@ namespace Interpeter
             KElement objLoad = Load(obj);
             
             throw new NotImplementedException("Writing fields is currently not implemented");
+        }
+
+        // Load native functions dynamically
+        private void AddInternalNativeFunctions()
+        {
+            foreach (Type t in GetType().Assembly.GetTypes())
+            {
+                if (t.IsSubclassOf(typeof (KFunction)))
+                {
+                    ConstructorInfo ctor = t.GetConstructor(new Type[] {});
+                    KFunction instance = (KFunction) ctor.Invoke(new object[] {});
+                    AddNativeFunction(t.Name.ToLowerInvariant(), instance);
+                }
+            }
         }
 
         #endregion
