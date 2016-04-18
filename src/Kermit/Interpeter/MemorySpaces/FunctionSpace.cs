@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Parser;
+using Interpeter.Types;
 
 namespace Interpeter.MemorySpaces
 {
@@ -14,6 +15,11 @@ namespace Interpeter.MemorySpaces
         public FunctionSpace(FunctionSymbol function) : base(function.Name + "_invocation")
         {
             FunctionDefinition = function;
+        }
+
+        public List<KVariable> GetArgumentList()
+        {
+            return Members.Select(x => new KVariable(x.Key, this)).ToList();
         }
     }
 }

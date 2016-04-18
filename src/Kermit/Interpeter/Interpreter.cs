@@ -281,20 +281,31 @@ namespace Interpeter
 
             int argCount = tree.ChildCount - 1;
 
-            if (fSymbol.Arguments == null && argCount > 0 ||
-                fSymbol.Arguments != null && argCount != fSymbol.Arguments.Count)
+            if (!(fSymbol is NativeFunctionSymbol) &&
+                (fSymbol.Arguments == null && argCount > 0 ||
+                fSymbol.Arguments != null && argCount != fSymbol.Arguments.Count))
             {
                 Listener.Error($"Function {fName}: argument list mismatch");
                 return null;
             }
 
-            int i = 0;
-            foreach (Symbol argSymbol in fSymbol.Arguments.Values)
+            int i = 1;
+            if (fSymbol is NativeFunctionSymbol)
+                for (; i < argCount; ++i)
+                {
+                    KermitAST argumentTree = (KermitAST)tree.GetChild(i);
+                    KElement argumentValue = Execute(argumentTree);
+                    fSpace[i + ""] = argumentValue;
+                }
+            else
             {
-                VariableSymbol argument = (VariableSymbol) argSymbol;
-                KermitAST argumentTree = (KermitAST) tree.GetChild(i++);
-                KElement argumentValue = Execute(argumentTree);
-                fSpace[argument.Name] = argumentValue;
+                foreach (Symbol argSymbol in fSymbol.Arguments.Values)
+                {
+                    VariableSymbol argument = (VariableSymbol)argSymbol;
+                    KermitAST argumentTree = (KermitAST)tree.GetChild(i++);
+                    KElement argumentValue = Execute(argumentTree);
+                    fSpace[argument.Name] = argumentValue;
+                }
             }
 
             KElement result = null;
@@ -302,7 +313,7 @@ namespace Interpeter
             try
             {
                 if (fSymbol is NativeFunctionSymbol)
-                    ((NativeFunctionSymbol) fSymbol).NativeFunction.Execute();
+                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(fSpace.GetArgumentList());
                 else
                     Execute(fSymbol.BlockAST);
             }

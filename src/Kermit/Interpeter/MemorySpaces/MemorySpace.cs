@@ -12,6 +12,7 @@ namespace Interpeter.MemorySpaces
         string _name;
 
         IDictionary<string, KElement> _members = new Dictionary<string, KElement>();
+        protected IDictionary<string, KElement> Members => _members;
 
         public MemorySpace(string name)
         {

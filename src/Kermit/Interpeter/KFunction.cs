@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Interpeter.Types;
 
 namespace Interpeter
 {
@@ -10,6 +11,44 @@ namespace Interpeter
     {
         public string Name { get; internal set; }
 
-        public abstract void Execute();
+        protected void Error(string msg, Exception e)
+        {
+            throw new InterpreterException(msg, e);
+        }
+
+        protected void Error(string msg)
+        {
+            throw new InterpreterException(msg);
+        }
+
+        internal void SafeExecute(List<KVariable> variables)
+        {
+            try
+            {
+                Execute(variables);
+            }
+            catch (InterpreterException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                Error($"Function {Name} throwed an exception", e);
+            }
+        }
+
+        protected bool TryCast<T>(KVariable var, out T casted)
+        {
+            if (var.Value.Value is T)
+            {
+                casted = (T) var.Value.Value;
+                return true;
+            }
+            casted = default(T);
+            return false;
+
+        }
+
+        public abstract void Execute(List<KVariable> variables);
     }
 }

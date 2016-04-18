@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InternalFunctions\Print.cs" />
+    <Compile Include="InternalFunctions\Write.cs" />
     <Compile Include="KFunction.cs" />
     <Compile Include="IInterpreterListener.cs" />
     <Compile Include="Interpreter.cs" />
@@ -63,6 +63,7 @@
     <Compile Include="Types\KInt.cs" />
     <Compile Include="Types\KNumber.cs" />
     <Compile Include="Types\KString.cs" />
+    <Compile Include="Types\KVariable.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\Parser.csproj">
