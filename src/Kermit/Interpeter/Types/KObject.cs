@@ -27,6 +27,8 @@ namespace Interpeter.Types
             set { GetType().GetField("Value").SetValue(this, value); }
         }
 
+        public bool IsVoid => Is<KVoid>();
+
         public bool IsNumber => Is<KNumber>();
 
         public bool IsInt => Is<KInt>();

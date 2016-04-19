@@ -6,6 +6,23 @@ namespace Interpeter.Types
     [Pure]
     public class TypeHelper
     {
+
+        public static KObject ToKObject(object obj)
+        {
+            if (obj is string)
+                return new KString((string) obj);
+            if (obj is int)
+                return new KInt((int) obj);
+            if (obj is float)
+                return new KFloat((float) obj);
+            if (obj is char)
+                return new KChar((char) obj);
+            if (obj is bool)
+                return new KBool((bool) obj);
+            // TODO return nativeobject
+            return null;
+        }
+
         public static T Cast<T>(KObject obj) where T : KObject
         {
             if (obj == null)

@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="FunctionCallbackInfo.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
+    <Compile Include="InternalFunctions\ReadLine.cs" />
     <Compile Include="InternalFunctions\Write.cs" />
     <Compile Include="InterpreterState.cs" />
     <Compile Include="KFunction.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Types\KNumber.cs" />
     <Compile Include="Types\KString.cs" />
     <Compile Include="Types\KVariable.cs" />
+    <Compile Include="Types\KVoid.cs" />
     <Compile Include="Types\TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>

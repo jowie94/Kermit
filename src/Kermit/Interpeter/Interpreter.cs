@@ -312,7 +312,12 @@ namespace Interpeter
             try
             {
                 if (fSymbol is NativeFunctionSymbol)
-                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(new FunctionCallbackInfo(fSpace.GetArgumentList(), this));
+                {
+                    FunctionCallbackInfo cInfo = new FunctionCallbackInfo(fSpace.GetArgumentList(), this);
+                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(cInfo);
+                    if (cInfo.ReturnValue.Value != null)
+                        throw cInfo.ReturnValue;
+                }
                 else
                     Execute(fSymbol.BlockAST);
             }

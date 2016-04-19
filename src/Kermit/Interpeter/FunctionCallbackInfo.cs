@@ -11,10 +11,13 @@ namespace Interpeter
 
         public InterpreterState InterpreterState { get; }
 
+        public ReturnValue ReturnValue { get; }
+
         internal FunctionCallbackInfo(List<KVariable> parameters, InterpreterState state)
         {
             _parameterList = parameters;
             InterpreterState = state;
+            ReturnValue = new ReturnValue();
         }
 
         public KVariable this[int id]
