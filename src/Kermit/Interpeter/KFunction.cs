@@ -21,11 +21,11 @@ namespace Interpeter
             throw new InterpreterException(msg);
         }
 
-        internal void SafeExecute(List<KVariable> variables)
+        internal void SafeExecute(FunctionCallbackInfo info)
         {
             try
             {
-                Execute(variables);
+                Execute(info);
             }
             catch (InterpreterException)
             {
@@ -49,6 +49,6 @@ namespace Interpeter
 
         }
 
-        public abstract void Execute(List<KVariable> variables);
+        public abstract void Execute(FunctionCallbackInfo info);
     }
 }

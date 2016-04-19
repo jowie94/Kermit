@@ -14,7 +14,7 @@ using Parser;
 
 namespace Interpeter
 {
-    public class Interpreter
+    public class Interpreter : InterpreterState
     {
 
         #region Internal classes
@@ -50,9 +50,7 @@ namespace Interpeter
         private IScope _globalScope;
         private KermitParser _parser;
         private KermitAST _root;
-        public MemorySpace _globals = new MemorySpace("globals"); // TODO: Public just for debugging! MUST BE PRIVATE
         private MemorySpace _currentSpace;
-        private Stack<FunctionSpace> _stack = new Stack<FunctionSpace>();  
         #endregion
 
         public IInterpreterListener Listener
@@ -222,6 +220,7 @@ namespace Interpeter
             catch (Exception e)
             {
                 Listener.Error("Problem executing: " + tree.ToStringTree(), e);
+                _stack.Clear();
             }
 
             return null;
@@ -313,7 +312,7 @@ namespace Interpeter
             try
             {
                 if (fSymbol is NativeFunctionSymbol)
-                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(fSpace.GetArgumentList());
+                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(new FunctionCallbackInfo(fSpace.GetArgumentList(), this));
                 else
                     Execute(fSymbol.BlockAST);
             }
@@ -485,7 +484,7 @@ namespace Interpeter
                 {
                     ConstructorInfo ctor = t.GetConstructor(new Type[] {});
                     KFunction instance = (KFunction) ctor.Invoke(new object[] {});
-                    AddNativeFunction(t.Name.ToLowerInvariant(), instance);
+                    AddNativeFunction(t.Name, instance);
                 }
             }
         }

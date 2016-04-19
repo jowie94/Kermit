@@ -59,6 +59,7 @@ namespace Terminal
             bool exit = false;
             string input = "";
             Interpreter interpreter = new Interpreter(globalScope, new SimpleListener());
+            globalScope.CommitScope();
             while (!exit)
             {
                 if (input == string.Empty)

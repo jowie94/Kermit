@@ -14,7 +14,7 @@ namespace Parser
 
         public new string Name
         {
-            get { return base.Name + '(' + Arguments.Keys.ToString() + ')'; }
+            get { return base.Name + '(' + string.Join(",", Arguments.Keys) + ')'; }
         }
 
         public FunctionSymbol(string name, IScope parentScope) : base(name, parentScope) {}

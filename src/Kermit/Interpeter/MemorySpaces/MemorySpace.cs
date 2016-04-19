@@ -9,14 +9,14 @@ namespace Interpeter.MemorySpaces
 {
     public class MemorySpace
     {
-        string _name;
+        public string Name { get; }
 
         IDictionary<string, KObject> _members = new Dictionary<string, KObject>();
         protected IDictionary<string, KObject> Members => _members;
 
         public MemorySpace(string name)
         {
-            _name = name;
+            Name = name;
         }
 
         public virtual KObject Get(string id)
@@ -37,7 +37,7 @@ namespace Interpeter.MemorySpaces
 
         public override string ToString()
         {
-            return $"{_name}: {string.Join(";", _members.Select(x => x.Key + "=" + x.Value?.ToString()))}";
+            return $"{Name}: {string.Join(";", _members.Select(x => x.Key + "=" + x.Value?.ToString()))}";
         }
 
         public KObject this[string id]

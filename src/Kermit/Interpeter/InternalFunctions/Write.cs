@@ -9,13 +9,19 @@ namespace Interpeter.InternalFunctions
 {
     internal class Write : KFunction
     {
-        public override void Execute(List<KVariable> variables)
+        public override void Execute(FunctionCallbackInfo info)
         {
             string msg = "";
-            if (variables.Count > 0)
-                msg = TypeHelper.ToString(variables[0].Value);
-            if (variables.Count > 1)
-                msg = string.Format(msg, variables.Skip(1).Select(x => x.Value.Value).ToArray());
+            if (info.Length > 0)
+                msg = TypeHelper.ToString(info[0].Value);
+            if (info.Length > 1)
+            {
+                object[] obj = new object[info.Length - 1];
+                for (int i = 1; i < info.Length; ++i)
+                    obj[i - 1] = info[i].Value.Value;
+                msg = string.Format(msg, obj);
+            }
+                
             Console.WriteLine(msg);
         }
     }

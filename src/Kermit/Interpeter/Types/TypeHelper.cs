@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace Interpeter.Types
 {
+    [Pure]
     public class TypeHelper
     {
         public static T Cast<T>(KObject obj) where T : KObject
