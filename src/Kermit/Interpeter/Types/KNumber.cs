@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    public abstract class KNumber : KElement, IComparable
+    public abstract class KNumber : KObject, IComparable
     {
         public abstract int ToInt();
 
@@ -14,28 +14,28 @@ namespace Interpeter.Types
 
         public static KNumber operator +(KNumber x, KNumber y)
         {
-            if (x.Type == KType.Float || y.Type == KType.Float)
+            if (x.IsFloat || y.IsFloat)
                 return new KFloat(x.ToFloat() + y.ToFloat());
             return new KInt(x.ToInt() + y.ToInt());
         }
 
         public static KNumber operator -(KNumber x, KNumber y)
         {
-            if (x.Type == KType.Float || y.Type == KType.Float)
+            if (x.IsFloat || y.IsFloat)
                 return new KFloat(x.ToFloat() - y.ToFloat());
             return new KInt(x.ToInt() + y.ToInt());
         }
 
         public static KNumber operator *(KNumber x, KNumber y)
         {
-            if (x.Type == KType.Float || y.Type == KType.Float)
+            if (x.IsFloat || y.IsFloat)
                 return new KFloat(x.ToFloat() * y.ToFloat());
             return new KInt(x.ToInt() * y.ToInt());
         }
 
         public static KNumber operator /(KNumber x, KNumber y)
         {
-            if (x.Type == KType.Float || y.Type == KType.Float)
+            if (x.IsFloat || y.IsFloat)
                 return new KFloat(x.ToFloat() / y.ToFloat());
             return new KInt(x.ToInt() / y.ToInt());
         }

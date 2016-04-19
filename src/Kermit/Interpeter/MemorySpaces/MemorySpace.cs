@@ -11,21 +11,21 @@ namespace Interpeter.MemorySpaces
     {
         string _name;
 
-        IDictionary<string, KElement> _members = new Dictionary<string, KElement>();
-        protected IDictionary<string, KElement> Members => _members;
+        IDictionary<string, KObject> _members = new Dictionary<string, KObject>();
+        protected IDictionary<string, KObject> Members => _members;
 
         public MemorySpace(string name)
         {
             _name = name;
         }
 
-        public virtual KElement Get(string id)
+        public virtual KObject Get(string id)
         {
-            KElement o;
+            KObject o;
             return _members.TryGetValue(id, out o) ? o : null;
         }
 
-        public virtual void Put(string id, KElement value)
+        public virtual void Put(string id, KObject value)
         {
             _members[id] = value;
         }
@@ -40,7 +40,7 @@ namespace Interpeter.MemorySpaces
             return $"{_name}: {string.Join(";", _members.Select(x => x.Key + "=" + x.Value?.ToString()))}";
         }
 
-        public KElement this[string id]
+        public KObject this[string id]
         {
             get { return Get(id); }
             set { Put(id, value); }

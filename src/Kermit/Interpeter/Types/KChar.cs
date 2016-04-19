@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    public class KChar : KElement, IComparable
+    public class KChar : KObject, IComparable
     {
-        public new char Value;
+        public char Value;
 
         public KChar(char value)
         {
             Value = value;
-            Type = KType.Char;
         }
 
         protected bool Equals(KChar other)

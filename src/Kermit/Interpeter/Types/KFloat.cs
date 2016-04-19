@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    class KFloat : KNumber
+    public class KFloat : KNumber
     {
         public new float Value;
 
         public KFloat(float value)
         {
             Value = value;
-            Type = KType.Float;
         }
 
         protected bool Equals(KFloat other)

@@ -58,12 +58,13 @@
     <Compile Include="ReturnValue.cs" />
     <Compile Include="Types\KBool.cs" />
     <Compile Include="Types\KChar.cs" />
-    <Compile Include="Types\KElement.cs" />
+    <Compile Include="Types\KObject.cs" />
     <Compile Include="Types\KFloat.cs" />
     <Compile Include="Types\KInt.cs" />
     <Compile Include="Types\KNumber.cs" />
     <Compile Include="Types\KString.cs" />
     <Compile Include="Types\KVariable.cs" />
+    <Compile Include="Types\TypeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Parser\Parser.csproj">

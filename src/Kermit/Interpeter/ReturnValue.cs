@@ -5,6 +5,6 @@ namespace Interpeter
 {
     public class ReturnValue : Exception
     {
-        public KElement Value;
+        public KObject Value;
     }
 }

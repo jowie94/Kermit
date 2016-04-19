@@ -12,9 +12,9 @@ namespace Interpeter.Types
     {
         private string _name;
         private MemorySpace _space;
-        private KElement _value;
+        private KObject _value;
 
-        public KElement Value
+        public KObject Value
         {
             get { return _value; }
             set

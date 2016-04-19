@@ -13,9 +13,9 @@ namespace Interpeter.InternalFunctions
         {
             string msg = "";
             if (variables.Count > 0)
-                msg = variables[0].Value.ToString();
+                msg = TypeHelper.ToString(variables[0].Value);
             if (variables.Count > 1)
-                msg = string.Format(msg, variables.ToList());
+                msg = string.Format(msg, variables.Skip(1).Select(x => x.Value.Value).ToArray());
             Console.WriteLine(msg);
         }
     }

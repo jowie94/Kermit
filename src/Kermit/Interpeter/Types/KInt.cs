@@ -13,7 +13,6 @@ namespace Interpeter.Types
         public KInt(int value)
         {
             Value = value;
-            Type = KType.Int;
         }
 
         protected bool Equals(KInt other)

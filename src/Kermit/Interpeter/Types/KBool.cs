@@ -6,32 +6,18 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    public class KBool : KElement
+    public class KBool : KObject
     {
         public new bool Value;
 
         public KBool(bool value)
         {
             Value = value;
-            Type = KType.Bool;
         }
 
         protected bool Equals(KBool other)
         {
             return Value == other.Value;
-        }
-
-        public static KBool ToKBool(KElement element)
-        {
-            if (element == null)
-                throw new ArgumentNullException(nameof(element));
-            if (element is KString)
-                return (KString) element;
-            if (element is KNumber)
-                return (KNumber) element;
-            if (element is KBool)
-                return (KBool) element;
-            return (KBool) element;
         }
 
         public override bool Equals(object obj)
@@ -59,17 +45,17 @@ namespace Interpeter.Types
 
         public static implicit operator KBool(KString str)
         {
-            return str.Value.Length > 0;
+            return TypeHelper.ToBool(str);
         }
 
         public static implicit operator KBool(KNumber num)
         {
-            return num.ToInt() != 0;
+            return TypeHelper.ToBool(num);
         }
 
         public static implicit operator KBool(KChar ch)
         {
-            return ch.Value != null;
+            return TypeHelper.ToBool(ch);
         }
 
         public static bool operator !(KBool element)

@@ -143,7 +143,7 @@ namespace Interpeter
             children?.ToList().ForEach(x => Execute((KermitAST) x));
         }
 
-        private KElement Execute(KermitAST tree)
+        private KObject Execute(KermitAST tree)
         {
             try
             {
@@ -265,7 +265,7 @@ namespace Interpeter
             throw SharedReturnValue;
         }
 
-        private KElement Call(KermitAST tree)
+        private KObject Call(KermitAST tree)
         {
             string fName = tree.GetChild(0).Text;
             FunctionSymbol fSymbol = (FunctionSymbol) tree.Scope.Resolve(fName);
@@ -289,12 +289,12 @@ namespace Interpeter
                 return null;
             }
 
-            int i = 1;
+            int i = 0;
             if (fSymbol is NativeFunctionSymbol)
                 for (; i < argCount; ++i)
                 {
-                    KermitAST argumentTree = (KermitAST)tree.GetChild(i);
-                    KElement argumentValue = Execute(argumentTree);
+                    KermitAST argumentTree = (KermitAST)tree.GetChild(i + 1);
+                    KObject argumentValue = Execute(argumentTree);
                     fSpace[i + ""] = argumentValue;
                 }
             else
@@ -302,13 +302,13 @@ namespace Interpeter
                 foreach (Symbol argSymbol in fSymbol.Arguments.Values)
                 {
                     VariableSymbol argument = (VariableSymbol)argSymbol;
-                    KermitAST argumentTree = (KermitAST)tree.GetChild(i++);
-                    KElement argumentValue = Execute(argumentTree);
+                    KermitAST argumentTree = (KermitAST)tree.GetChild(++i);
+                    KObject argumentValue = Execute(argumentTree);
                     fSpace[argument.Name] = argumentValue;
                 }
             }
 
-            KElement result = null;
+            KObject result = null;
             _stack.Push(fSpace);
             try
             {
@@ -326,7 +326,7 @@ namespace Interpeter
             return result;
         }
 
-        private KElement Instance(KermitAST tree)
+        private KObject Instance(KermitAST tree)
         {
             string objName = tree.GetChild(0).Text;
 
@@ -335,7 +335,7 @@ namespace Interpeter
 
         private KBool Not(KermitAST tree)
         {
-            KElement inner = Execute((KermitAST) tree.GetChild(0));
+            KObject inner = Execute((KermitAST) tree.GetChild(0));
             return !inner;
         }
 
@@ -345,7 +345,7 @@ namespace Interpeter
             KermitAST code = (KermitAST) tree.GetChild(1);
             KermitAST elseCode = tree.ChildCount == 3 ? (KermitAST) tree.GetChild(3) : null;
 
-            KBool cres = KBool.ToKBool(Execute(condition));
+            KBool cres = TypeHelper.ToBool(Execute(condition));
             if (cres)
                 Execute(code);
             else if (elseCode != null)
@@ -356,7 +356,7 @@ namespace Interpeter
         {
             KermitAST lhs = (KermitAST) tree.GetChild(0);
             KermitAST expr = tree.GetChild(1) as KermitAST;
-            KElement value = Execute(expr);
+            KObject value = Execute(expr);
 
             if (value != null)
             {
@@ -373,7 +373,7 @@ namespace Interpeter
             }
         }
 
-        private KElement Load(KermitAST tree)
+        private KObject Load(KermitAST tree)
         {
             if (tree.Type == KermitParser.DOT)
                 return FieldLoad(tree);
@@ -387,8 +387,8 @@ namespace Interpeter
 
         private KBool Eq(KermitAST tree)
         {
-            KElement a = Execute((KermitAST) tree.GetChild(0));
-            KElement b = Execute((KermitAST) tree.GetChild(1));
+            KObject a = Execute((KermitAST) tree.GetChild(0));
+            KObject b = Execute((KermitAST) tree.GetChild(1));
 
             return a == b;
         }
@@ -405,30 +405,30 @@ namespace Interpeter
 
         private int Compare(KermitAST tree)
         {
-            KElement a = Execute((KermitAST)tree.GetChild(0));
-            KElement b = Execute((KermitAST)tree.GetChild(1));
+            KObject a = Execute((KermitAST)tree.GetChild(0));
+            KObject b = Execute((KermitAST)tree.GetChild(1));
 
-            if (a is IComparable && b is IComparable)
+            if (a.Is<IComparable>() && b.Is<IComparable>())
             {
                 return ((IComparable)a).CompareTo(b);
             }
             throw new ArgumentException("Types are not comparable");
         }
 
-        private KElement Add(KermitAST tree)
+        private KObject Add(KermitAST tree)
         {
-            KElement a = Execute((KermitAST)tree.GetChild(0));
-            KElement b = Execute((KermitAST)tree.GetChild(1));
+            KObject a = Execute((KermitAST)tree.GetChild(0));
+            KObject b = Execute((KermitAST)tree.GetChild(1));
 
-            if (a.Type == KType.String || b.Type == KType.String)
+            if (a.IsString || b.IsString)
                 return new KString(a.Value.ToString() + b.Value.ToString());
             return Arithmetic(tree);
         }
 
-        private KElement Arithmetic(KermitAST tree)
+        private KObject Arithmetic(KermitAST tree)
         {
-            KNumber a = (KNumber) Execute((KermitAST) tree.GetChild(0));
-            KNumber b = (KNumber) Execute((KermitAST) tree.GetChild(1));
+            KNumber a = Execute((KermitAST) tree.GetChild(0)).Cast<KNumber>();
+            KNumber b = Execute((KermitAST) tree.GetChild(1)).Cast<KNumber>();
             switch (tree.Type)
             {
                 case KermitParser.ADD:
@@ -457,7 +457,7 @@ namespace Interpeter
             return _globals.Contains(id) ? _globals : null;
         }
 
-        private KElement FieldLoad(KermitAST tree)
+        private KObject FieldLoad(KermitAST tree)
         {
             KermitAST leftExpr = (KermitAST) tree.GetChild(0);
             KermitAST nodeId = (KermitAST) tree.GetChild(1);
@@ -466,12 +466,12 @@ namespace Interpeter
             throw new NotImplementedException("Loading fields is currently not implemented");
         }
 
-        private void FieldAssign(KermitAST tree, KElement value)
+        private void FieldAssign(KermitAST tree, KObject value)
         {
             KermitAST obj = (KermitAST) tree.GetChild(0);
             KermitAST field = (KermitAST) tree.GetChild(1);
             String fieldName = field.Text;
-            KElement objLoad = Load(obj);
+            KObject objLoad = Load(obj);
             
             throw new NotImplementedException("Writing fields is currently not implemented");
         }
