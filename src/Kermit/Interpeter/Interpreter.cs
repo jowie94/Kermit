@@ -347,7 +347,7 @@ namespace Interpeter
         {
             KermitAST condition = (KermitAST) tree.GetChild(0);
             KermitAST code = (KermitAST) tree.GetChild(1);
-            KermitAST elseCode = tree.ChildCount == 3 ? (KermitAST) tree.GetChild(3) : null;
+            KermitAST elseCode = tree.ChildCount == 3 ? (KermitAST) tree.GetChild(2) : null;
 
             KBool cres = TypeHelper.ToBool(Execute(condition));
             if (cres)

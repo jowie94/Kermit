@@ -37,7 +37,7 @@ namespace Interpeter.MemorySpaces
 
         public override string ToString()
         {
-            return $"{Name}: {string.Join(";", _members.Select(x => x.Key + "=" + x.Value?.ToString()))}";
+            return $"{Name}: {string.Join(";", _members.Select(x => $"{x.Key} = <{x.Value.GetType().Name}> {x.Value?.ToString()}"))}";
         }
 
         public KObject this[string id]

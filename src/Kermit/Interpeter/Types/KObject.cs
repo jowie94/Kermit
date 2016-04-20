@@ -8,17 +8,6 @@ using System.Threading.Tasks;
 
 namespace Interpeter.Types
 {
-    public enum KType
-    {
-        Int,
-        Float,
-        Char,
-        Bool,
-        String,
-        Object,
-        Null
-    }
-
     public abstract class KObject
     {
         public virtual object Value
