@@ -5,7 +5,7 @@ namespace Interpeter
 {
     public class FunctionCallbackInfo
     {
-        private readonly List<KVariable> _parameterList;
+        private readonly List<KLocal> _parameterList;
 
         public int Length => _parameterList.Count;
 
@@ -13,14 +13,14 @@ namespace Interpeter
 
         public ReturnValue ReturnValue { get; }
 
-        internal FunctionCallbackInfo(List<KVariable> parameters, InterpreterState state)
+        internal FunctionCallbackInfo(List<KLocal> parameters, InterpreterState state)
         {
             _parameterList = parameters;
             InterpreterState = state;
             ReturnValue = new ReturnValue();
         }
 
-        public KVariable this[int id]
+        public KLocal this[int id]
         {
             get { return _parameterList[id]; }
             set { _parameterList[id] = value; }

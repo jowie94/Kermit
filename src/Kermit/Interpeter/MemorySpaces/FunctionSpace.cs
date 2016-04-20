@@ -17,9 +17,9 @@ namespace Interpeter.MemorySpaces
             FunctionDefinition = function;
         }
 
-        public List<KVariable> GetArgumentList()
+        public List<KLocal> GetArgumentList()
         {
-            return Members.Select(x => new KVariable(x.Key, this)).ToList();
+            return Members.Select(x => new KLocal(x.Value)).ToList();
         }
     }
 }

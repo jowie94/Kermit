@@ -220,7 +220,7 @@ namespace Interpeter
             catch (Exception e)
             {
                 Listener.Error("Problem executing: " + tree.ToStringTree(), e);
-                _stack.Clear();
+                //_stack.Clear();
             }
 
             return null;

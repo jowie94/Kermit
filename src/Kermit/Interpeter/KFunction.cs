@@ -37,7 +37,7 @@ namespace Interpeter
             }
         }
 
-        protected bool TryCast<T>(KVariable var, out T casted)
+        protected bool TryCast<T>(KLocal var, out T casted)
         {
             if (var.Value.Value is T)
             {
