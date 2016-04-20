@@ -8,7 +8,7 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL; DOT='.';
+	BLOCK; ARGS; CALL; DOT='.'; REF='ref';
 	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; NEW='new'; // Keywords
 	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
@@ -93,7 +93,12 @@ call
 @after {
 	$call.tree.Scope = currentScope;
 }
-	: name=ID '(' (expr (',' expr)*)? ')' -> ^(CALL ID expr*) ;
+	: name=ID '(' (refOrExpr (',' refOrExpr)*)? ')' -> ^(CALL ID refOrExpr*) ;
+
+refOrExpr
+	: 'ref' qid	-> ^('ref' qid)
+	| expr
+	;
 
 expr: addexpr (('=='|'!='|'<'|'>'|'<='|'>=')^ addexpr)? ;
 

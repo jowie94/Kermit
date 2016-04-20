@@ -261,7 +261,7 @@ namespace Interpeter
             _currentSpace = fSpace;
 
             if (!function.IsNative)
-                parameters.ForEach(x => fSpace[x.Name] = x.Value);
+                parameters.ForEach(x => fSpace[x.Name] = x);
 
             KObject result = null;
             _stack.Push(fSpace);
@@ -310,11 +310,18 @@ namespace Interpeter
             var arguments = function.Value.Arguments.Values.GetEnumerator();
             for (int i = 0; i < argCount; ++i)
             {
+                arguments.MoveNext();
                 string name = function.IsNative ? "" : arguments.Current.Name;
                 KermitAST argumentTree = (KermitAST) tree.GetChild(i + 1);
-                KObject argumentValue = Execute(argumentTree);
-                param.Add(new KLocal(name, argumentValue));
-                arguments.MoveNext();
+                KLocal var;
+                if (argumentTree.Type == KermitParser.REF)
+                    var = new KGlobal(name, argumentTree.GetChild(0).Text, _currentSpace);
+                else
+                {
+                    KObject argumentValue = Execute(argumentTree);
+                    var = new KLocal(name, argumentValue);
+                }
+                param.Add(var);
             }
 
             return CallFunction(function, param);
@@ -362,7 +369,11 @@ namespace Interpeter
                 {
                     MemorySpace space = GetSpaceWithSymbol(lhs.Text);
                     if (space == null) space = _currentSpace;
-                    space[lhs.Text] = value;
+                    KLocal var = space[lhs.Text];
+                    if (var == null)
+                        space[lhs.Text] = new KLocal(lhs.Text, value);
+                    else
+                        var.Value = value;
                 }
             }
         }
@@ -374,7 +385,7 @@ namespace Interpeter
 
             MemorySpace space = GetSpaceWithSymbol(tree.Text);
             if (space != null)
-                return space[tree.Text];
+                return space[tree.Text].Value;
             Listener.Error("No such variable " + tree.Text, tree.Token); // TODO: Should throw exception
             return null;
         }

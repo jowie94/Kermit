@@ -18,13 +18,13 @@ namespace Interpeter.MemorySpaces
             _parentSpace = parentSpace;
         }
 
-        public override KObject Get(string id)
+        public override KLocal Get(string id)
         {
-            KObject ret = base.Get(id) ?? _parentSpace[id];
+            KLocal ret = base.Get(id) ?? _parentSpace[id];
             return ret;
         }
 
-        public override void Put(string id, KObject value)
+        public override void Put(string id, KLocal value)
         {
             if (Contains(id) || !_parentSpace.Contains(id))
                 base.Put(id, value);

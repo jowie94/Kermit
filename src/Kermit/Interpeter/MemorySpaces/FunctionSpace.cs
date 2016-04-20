@@ -19,7 +19,7 @@ namespace Interpeter.MemorySpaces
 
         public List<KLocal> GetArgumentList()
         {
-            return Members.Select(x => new KLocal(x.Value)).ToList();
+            return Members.Values.ToList();
         }
     }
 }

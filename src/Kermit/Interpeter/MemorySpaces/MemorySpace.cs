@@ -11,21 +11,21 @@ namespace Interpeter.MemorySpaces
     {
         public string Name { get; }
 
-        IDictionary<string, KObject> _members = new Dictionary<string, KObject>();
-        protected IDictionary<string, KObject> Members => _members;
+        IDictionary<string, KLocal> _members = new Dictionary<string, KLocal>();
+        protected IDictionary<string, KLocal> Members => _members;
 
         public MemorySpace(string name)
         {
             Name = name;
         }
 
-        public virtual KObject Get(string id)
+        public virtual KLocal Get(string id)
         {
-            KObject o;
+            KLocal o;
             return _members.TryGetValue(id, out o) ? o : null;
         }
 
-        public virtual void Put(string id, KObject value)
+        public virtual void Put(string id, KLocal value)
         {
             _members[id] = value;
         }
@@ -37,10 +37,10 @@ namespace Interpeter.MemorySpaces
 
         public override string ToString()
         {
-            return $"{Name}: {string.Join(";", _members.Select(x => $"{x.Key} = <{x.Value.GetType().Name}> {x.Value?.ToString()}"))}";
+            return $"{Name}: {string.Join(";", _members.Select(x => $"{x.Key} = <{x.Value.Value.GetType().Name}> {x.Value.Value?.ToString()}"))}";
         }
 
-        public KObject this[string id]
+        public KLocal this[string id]
         {
             get { return Get(id); }
             set { Put(id, value); }
