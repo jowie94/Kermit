@@ -7,7 +7,7 @@ using Interpeter.Types;
 
 namespace Interpeter.InternalFunctions
 {
-    class TypeOf : KFunction
+    class TypeOf : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)
         {

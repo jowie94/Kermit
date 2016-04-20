@@ -7,11 +7,11 @@ using Parser;
 
 namespace Interpeter
 {
-    public class NativeFunctionSymbol : FunctionSymbol
+    internal class NativeFunctionSymbol : FunctionSymbol
     {
-        public KFunction NativeFunction;
+        public NativeFunction NativeFunction;
 
-        public NativeFunctionSymbol(string name, IScope parentScope, KFunction nativeFunction) : base(name, parentScope)
+        public NativeFunctionSymbol(string name, IScope parentScope, NativeFunction nativeFunction) : base(name, parentScope)
         {
             NativeFunction = nativeFunction;
         }

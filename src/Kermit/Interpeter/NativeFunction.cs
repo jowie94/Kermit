@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Interpeter.Types;
 
 namespace Interpeter
 {
-    public abstract class KFunction
+    public abstract class NativeFunction
     {
         public string Name { get; internal set; }
 

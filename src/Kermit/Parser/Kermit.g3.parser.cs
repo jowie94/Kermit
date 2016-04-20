@@ -10,7 +10,14 @@ namespace Parser
         public override void ReportError(RecognitionException e)
         {
             if (e.Token.Type == EOF)
+            {
+                if (currentScope.EnclosingScope != null)
+                {
+                    currentScope = currentScope.EnclosingScope;
+                    currentScope = currentScope.EnclosingScope;
+                }
                 throw new PartialStatement();
+            }
             base.ReportError(e);
             //Console.WriteLine(e.GetType());
             //Console.WriteLine(e.Token.Type);

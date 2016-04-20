@@ -14,6 +14,8 @@ namespace Parser
         /// </summary>
         string ScopeName { get; }
 
+        Symbol[] SymbolList { get; }
+
         /// <summary>
         /// The parent scope. Here we will look for more symbols.
         /// </summary>

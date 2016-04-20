@@ -20,6 +20,8 @@ namespace Parser
             get { return Name; }
         }
 
+        public Symbol[] SymbolList => EnclosingScope.SymbolList.Concat(GetMembers().Values).ToArray();
+
         internal ScopedSymbol(string name, IScope enclosingScope) : base(name)
         {
             EnclosingScope = enclosingScope;

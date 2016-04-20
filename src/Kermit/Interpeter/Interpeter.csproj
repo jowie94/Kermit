@@ -46,13 +46,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionCallbackInfo.cs" />
+    <Compile Include="InternalFunctions\PrintFunctions.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
     <Compile Include="InternalFunctions\ReadLine.cs" />
-    <Compile Include="InternalFunctions\Test.cs" />
     <Compile Include="InternalFunctions\TypeOf.cs" />
     <Compile Include="InternalFunctions\Write.cs" />
     <Compile Include="InterpreterState.cs" />
-    <Compile Include="KFunction.cs" />
+    <Compile Include="NativeFunction.cs" />
     <Compile Include="IInterpreterListener.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="InterpreterException.cs" />
@@ -64,6 +64,7 @@
     <Compile Include="ReturnValue.cs" />
     <Compile Include="Types\KBool.cs" />
     <Compile Include="Types\KChar.cs" />
+    <Compile Include="Types\KFunction.cs" />
     <Compile Include="Types\KGlobal.cs" />
     <Compile Include="Types\KObject.cs" />
     <Compile Include="Types\KFloat.cs" />

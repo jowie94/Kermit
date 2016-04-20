@@ -3,7 +3,7 @@ using Interpeter.Types;
 
 namespace Interpeter.InternalFunctions
 {
-    class ReadLine : KFunction
+    class ReadLine : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)
         {

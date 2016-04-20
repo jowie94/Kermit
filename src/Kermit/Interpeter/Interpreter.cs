@@ -47,7 +47,6 @@ namespace Interpeter
 
         #region Private fields
         private IInterpreterListener _listener;
-        private IScope _globalScope;
         private KermitParser _parser;
         private KermitAST _root;
         private MemorySpace _currentSpace;
@@ -64,17 +63,6 @@ namespace Interpeter
             }
         }
 
-        public IScope GlobalScope
-        {
-            get { return _globalScope; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException();
-                _globalScope = value;
-            }
-        }
-
         public Interpreter(IScope globalScope) : this(globalScope, new DummyListener()) {}
 
         public readonly ReturnValue SharedReturnValue = new ReturnValue();
@@ -83,13 +71,13 @@ namespace Interpeter
         {
             if (globalScope == null)
                 throw new ArgumentNullException(nameof(globalScope), "Global scope can't be null");
-            _globalScope = globalScope;
+            GlobalScope = globalScope;
 
             if (listener == null)
                 throw new ArgumentNullException(nameof(listener), "Listener can't be null");
             _listener = listener;
 
-            _parser = new KermitParser(null, _globalScope) {TreeAdaptor = new KermitAdaptor()};
+            _parser = new KermitParser(null, globalScope) {TreeAdaptor = new KermitAdaptor()};
             //_parser.TraceDestination = Console.Error;
 
             _currentSpace = _globals;
@@ -97,11 +85,11 @@ namespace Interpeter
             AddInternalNativeFunctions();
         }
 
-        public void AddNativeFunction(string name, KFunction function)
+        public void AddNativeFunction(string name, NativeFunction function)
         {
             function.Name = name;
-            NativeFunctionSymbol symbol = new NativeFunctionSymbol(name, _globalScope, function);
-            _globalScope.Define(symbol);
+            NativeFunctionSymbol symbol = new NativeFunctionSymbol(name, GlobalScope, function);
+            GlobalScope.Define(symbol);
         }
 
         public void Interpret(ANTLRInputStream input)
@@ -264,59 +252,26 @@ namespace Interpeter
             throw SharedReturnValue;
         }
 
-        private KObject Call(KermitAST tree)
+        public override KObject CallFunction(KFunction function, List<KLocal> parameters)
         {
-            string fName = tree.GetChild(0).Text;
-            FunctionSymbol fSymbol = (FunctionSymbol) tree.Scope.Resolve(fName);
-            if (fSymbol == null)
-            {
-                Listener.Error($"Function name {fName} is not defined");
-                return null;
-            }
+            FunctionSymbol fSymbol = function.Value;
 
             FunctionSpace fSpace = new FunctionSpace(fSymbol);
             MemorySpace savedSpace = _currentSpace;
             _currentSpace = fSpace;
 
-            int argCount = tree.ChildCount - 1;
-
-            if (!(fSymbol is NativeFunctionSymbol) &&
-                (fSymbol.Arguments == null && argCount > 0 ||
-                fSymbol.Arguments != null && argCount != fSymbol.Arguments.Count))
-            {
-                Listener.Error($"Function {fName}: argument list mismatch");
-                return null;
-            }
-
-            int i = 0;
-            if (fSymbol is NativeFunctionSymbol)
-                for (; i < argCount; ++i)
-                {
-                    KermitAST argumentTree = (KermitAST)tree.GetChild(i + 1);
-                    KObject argumentValue = Execute(argumentTree);
-                    fSpace[i + ""] = argumentValue;
-                }
-            else
-            {
-                foreach (Symbol argSymbol in fSymbol.Arguments.Values)
-                {
-                    VariableSymbol argument = (VariableSymbol)argSymbol;
-                    KermitAST argumentTree = (KermitAST)tree.GetChild(++i);
-                    KObject argumentValue = Execute(argumentTree);
-                    fSpace[argument.Name] = argumentValue;
-                }
-            }
+            if (!function.IsNative)
+                parameters.ForEach(x => fSpace[x.Name] = x.Value);
 
             KObject result = null;
             _stack.Push(fSpace);
             try
             {
-                if (fSymbol is NativeFunctionSymbol)
+                if (function.IsNative)
                 {
-                    FunctionCallbackInfo cInfo = new FunctionCallbackInfo(fSpace.GetArgumentList(), this);
-                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(cInfo);
-                    if (cInfo.ReturnValue.Value != null)
-                        throw cInfo.ReturnValue;
+                    FunctionCallbackInfo cInfo = new FunctionCallbackInfo(parameters, this);
+                    ((NativeFunctionSymbol)fSymbol).NativeFunction.SafeExecute(cInfo);
+                    result = cInfo.ReturnValue.Value;
                 }
                 else
                     Execute(fSymbol.BlockAST);
@@ -328,6 +283,41 @@ namespace Interpeter
             _stack.Pop();
             _currentSpace = savedSpace;
             return result;
+        }
+
+        private KObject Call(KermitAST tree)
+        {
+            string fName = tree.GetChild(0).Text;
+            KFunction function = GetFunction(fName);
+
+            if (function == null)
+            {
+                Listener.Error($"Function name {fName} is not defined");
+                return null;
+            }
+
+            int argCount = tree.ChildCount - 1;
+
+            if (!function.IsNative &&
+                (function.Value.Arguments == null && argCount > 0 ||
+                function.Value.Arguments != null && argCount != function.Value.Arguments.Count))
+            {
+                Listener.Error($"Function {fName}: argument list mismatch");
+                return null;
+            }
+
+            List<KLocal> param = new List<KLocal>(argCount);
+            var arguments = function.Value.Arguments.Values.GetEnumerator();
+            for (int i = 0; i < argCount; ++i)
+            {
+                string name = function.IsNative ? "" : arguments.Current.Name;
+                KermitAST argumentTree = (KermitAST) tree.GetChild(i + 1);
+                KObject argumentValue = Execute(argumentTree);
+                param.Add(new KLocal(name, argumentValue));
+                arguments.MoveNext();
+            }
+
+            return CallFunction(function, param);
         }
 
         private KObject Instance(KermitAST tree)
@@ -485,10 +475,10 @@ namespace Interpeter
         {
             foreach (Type t in GetType().Assembly.GetTypes())
             {
-                if (t.IsSubclassOf(typeof (KFunction)))
+                if (t.IsSubclassOf(typeof (NativeFunction)))
                 {
                     ConstructorInfo ctor = t.GetConstructor(new Type[] {});
-                    KFunction instance = (KFunction) ctor.Invoke(new object[] {});
+                    NativeFunction instance = (NativeFunction) ctor.Invoke(new object[] {});
                     AddNativeFunction(t.Name, instance);
                 }
             }

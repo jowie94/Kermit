@@ -4,7 +4,6 @@ namespace Interpeter.Types
 {
     public class KGlobal : KLocal
     {
-        private string _name;
         private MemorySpace _space;
 
         public override KObject Value
@@ -13,13 +12,12 @@ namespace Interpeter.Types
             set
             {
                 base.Value = value;
-                _space[_name] = value;
+                _space[Name] = value;
             }
         }
 
-        public KGlobal(string name, MemorySpace space) : base(space[name])
+        public KGlobal(string name, MemorySpace space) : base(name, space[name])
         {
-            _name = name;
             _space = space;
         }
     }

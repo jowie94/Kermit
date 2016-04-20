@@ -13,6 +13,8 @@ namespace Terminal
         public string ScopeName { get; protected set; }
         public IScope EnclosingScope { get; private set; }
 
+        public Symbol[] SymbolList => _symbols.Values.Concat(_tmpSymbols.Values).ToArray();
+
         IDictionary<string, Symbol> _symbols = new Dictionary<string, Symbol>();
         IDictionary<string, Symbol> _tmpSymbols = new Dictionary<string, Symbol>();
 

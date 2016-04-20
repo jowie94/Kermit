@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Diagnostics.Contracts;
 
 namespace Interpeter.Types
@@ -32,6 +35,16 @@ namespace Interpeter.Types
             if (typeof(T).IsSubclassOf(typeof(KNumber)) && obj.GetType().IsSubclassOf(typeof(KNumber)))
                 return (T) obj;
             throw new InvalidCastException($"Type {obj.GetType().Name} is not casteable to {typeof(T).Name}");
+        }
+
+        public static List<KLocal> ToParameterList(params object[] parameters)
+        {
+            return ToParameterList(parameters.ToList());
+        }
+
+        public static List<KLocal> ToParameterList(IEnumerable<object> parameters)
+        {
+            return parameters.Select(x => new KLocal(ToKObject(x))).ToList();
         }
 
         public static bool Is<T>(KObject obj)
