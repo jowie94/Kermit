@@ -54,6 +54,18 @@ namespace Interpeter.Types
             return element.Not();
         }
 
+        public KObject GetInnerField(string name)
+        {
+            object obj = Value;
+            PropertyInfo pinfo = obj.GetType()
+                .GetProperty(name,
+                    BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            if (pinfo == null)
+                return null;
+            // TODO: check fields
+            return TypeHelper.ToKObject(pinfo.GetValue(obj));
+        }
+
         protected abstract bool Not();
     }
 }

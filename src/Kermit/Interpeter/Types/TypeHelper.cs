@@ -22,8 +22,7 @@ namespace Interpeter.Types
                 return new KChar((char) obj);
             if (obj is bool)
                 return new KBool((bool) obj);
-            // TODO return nativeobject
-            return null;
+            return new KNativeObject(obj);
         }
 
         public static T Cast<T>(KObject obj) where T : KObject

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionCallbackInfo.cs" />
+    <Compile Include="InternalFunctions\List.cs" />
     <Compile Include="InternalFunctions\PrintFunctions.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
     <Compile Include="InternalFunctions\ReadLine.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Types\KChar.cs" />
     <Compile Include="Types\KFunction.cs" />
     <Compile Include="Types\KGlobal.cs" />
+    <Compile Include="Types\KNativeObject.cs" />
     <Compile Include="Types\KObject.cs" />
     <Compile Include="Types\KFloat.cs" />
     <Compile Include="Types\KInt.cs" />

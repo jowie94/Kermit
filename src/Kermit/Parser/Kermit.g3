@@ -112,15 +112,18 @@ mulexpr
 
 notOrAtom
 	: NOT notOrAtom -> ^(NOT notOrAtom)
-	| atom
+	| qatom
 	;
+
+qatom
+	: atom ('.'^ ID)* ;
 
 atom
 	: '-'? n=(INT|FLOAT) -> ^(NUM $n '-'?)
 	| CHAR
 	| STRING
 	| ('true'|'false')
-	| qid
+	| ID
 	| call
 	| instance
 	| '(' expr ')' -> expr

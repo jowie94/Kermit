@@ -468,7 +468,12 @@ namespace Interpeter
             KermitAST nodeId = (KermitAST) tree.GetChild(1);
             string id = nodeId.Text;
 
-            throw new NotImplementedException("Loading fields is currently not implemented");
+            KObject obj = Execute(leftExpr);
+            KObject val = obj.GetInnerField(id);
+            
+            if (val == null)
+                throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {id}");
+            return val;
         }
 
         private void FieldAssign(KermitAST tree, KObject value)
