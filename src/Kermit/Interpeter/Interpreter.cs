@@ -359,7 +359,7 @@ namespace Interpeter
             KermitAST expr = tree.GetChild(1) as KermitAST;
             KObject value = Execute(expr);
 
-            if (value != null)
+            if (value != null && !value.IsVoid)
             {
                 if (lhs.Type == KermitParser.DOT)
                 {
@@ -465,25 +465,39 @@ namespace Interpeter
         private KObject FieldLoad(KermitAST tree)
         {
             KermitAST leftExpr = (KermitAST) tree.GetChild(0);
-            KermitAST nodeId = (KermitAST) tree.GetChild(1);
-            string id = nodeId.Text;
-
+            KermitAST field = (KermitAST) tree.GetChild(1);
             KObject obj = Execute(leftExpr);
-            KObject val = obj.GetInnerField(id);
-            
+            KObject val;
+            string name;
+
+            if (field.Type == KermitParser.CALL)
+            {
+                name = field.GetChild(0).Text;
+                object[] args = new object[field.ChildCount - 1];
+                for (int i = 0; i < args.Length; ++i)
+                    args[i] = Execute((KermitAST) field.GetChild(i + 1)).Value;
+                val = obj.CallInnerFunction(name, args);
+            }
+            else
+            {
+                name = field.Text;
+                val = obj.GetInnerField(name);
+            }
+
             if (val == null)
-                throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {id}");
+                throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
             return val;
         }
 
         private void FieldAssign(KermitAST tree, KObject value)
         {
-            KermitAST obj = (KermitAST) tree.GetChild(0);
-            KermitAST field = (KermitAST) tree.GetChild(1);
-            String fieldName = field.Text;
-            KObject objLoad = Load(obj);
-            
-            throw new NotImplementedException("Writing fields is currently not implemented");
+            KermitAST leftExpr = (KermitAST)tree.GetChild(0);
+            KermitAST field = (KermitAST)tree.GetChild(1);
+            KObject obj = Execute(leftExpr);
+            string name = field.Text;
+
+            if (!obj.SetInnerField(name, value))
+                throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
         }
 
         // Load native functions dynamically

@@ -14,5 +14,10 @@ namespace Interpeter.Types
         {
             return true;
         }
+
+        public override string ToString()
+        {
+            return "VOID";
+        }
     }
 }

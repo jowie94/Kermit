@@ -116,7 +116,7 @@ notOrAtom
 	;
 
 qatom
-	: atom ('.'^ ID)* ;
+	: atom ('.'^ (ID|call))*;
 
 atom
 	: '-'? n=(INT|FLOAT) -> ^(NUM $n '-'?)
@@ -149,7 +149,7 @@ WS		:   (' '|'\t') {$channel=Hidden;};
 
 NL		:	'\r'? '\n' ;
 
-ID		:   LETTER (LETTER | '0'..'9')*  ;
+ID		:   LETTER (LETTER | '0'..'9' | '-' | '_')*  ;
 
 fragment
 LETTER

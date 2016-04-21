@@ -9,7 +9,7 @@ namespace Parser
     {
         public override void ReportError(RecognitionException e)
         {
-            if (e.Token.Type == EOF)
+            if (e.Token != null && e.Token.Type == EOF)
             {
                 if (currentScope.EnclosingScope != null)
                 {

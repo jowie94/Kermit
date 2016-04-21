@@ -66,6 +66,32 @@ namespace Interpeter.Types
             return TypeHelper.ToKObject(pinfo.GetValue(obj));
         }
 
+        public bool SetInnerField(string name, KObject value)
+        {
+            object obj = Value;
+            PropertyInfo pinfo = obj.GetType()
+                .GetProperty(name,
+                    BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            if (pinfo == null)
+                return false;
+            // TODO: check fields
+            pinfo.SetValue(obj, value.Value);
+            return true;
+        }
+
+        public KObject CallInnerFunction(string name, object[] parameters)
+        {
+            object obj = Value;
+            Type[] types = parameters.Select(x => x.GetType()).ToArray(); // TODO: Border case, array parameter
+            MethodInfo info = obj.GetType().GetMethod(name, types);
+            if (info == null)
+                return null;
+            object ret = info.Invoke(obj, parameters);
+            if (info.ReturnType == typeof(void))
+                return new KVoid();
+            return TypeHelper.ToKObject(ret);
+        }
+
         protected abstract bool Not();
     }
 }
