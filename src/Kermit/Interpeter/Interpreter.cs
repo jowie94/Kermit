@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-using Interpeter.MemorySpaces;
-using Interpeter.Types;
-using Parser;
+using Kermit.Interpeter.MemorySpaces;
+using Kermit.Interpeter.Types;
+using Kermit.Parser;
+using KermitLexer = Kermit.Parser.KermitLexer;
+using KermitParser = Kermit.Parser.KermitParser;
 
-namespace Interpeter
+namespace Kermit.Interpeter
 {
     public class Interpreter : InterpreterState
     {

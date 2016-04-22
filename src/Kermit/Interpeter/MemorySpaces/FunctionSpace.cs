@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Parser;
-using Interpeter.Types;
+using Kermit.Interpeter.Types;
+using Kermit.Parser;
 
-namespace Interpeter.MemorySpaces
+namespace Kermit.Interpeter.MemorySpaces
 {
     class FunctionSpace : MemorySpace
     {

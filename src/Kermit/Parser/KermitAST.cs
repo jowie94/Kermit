@@ -1,7 +1,7 @@
 ﻿using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 
-namespace Parser
+namespace Kermit.Parser
 {
     public class KermitAST : CommonTree
     {

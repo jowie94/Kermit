@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interpeter.Types
+namespace Kermit.Interpeter.Types
 {
     public class KFloat : KNumber
     {

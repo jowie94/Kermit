@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Diagnostics.Contracts;
 
-namespace Interpeter.Types
+namespace Kermit.Interpeter.Types
 {
     [Pure]
     public class TypeHelper

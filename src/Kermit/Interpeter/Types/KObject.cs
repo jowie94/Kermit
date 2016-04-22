@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interpeter.Types
+namespace Kermit.Interpeter.Types
 {
     public abstract class KObject
     {

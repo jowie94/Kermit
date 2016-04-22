@@ -14,8 +14,8 @@ tokens {
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
 
-@lexer::namespace{Parser}
-@parser::namespace{Parser}
+@lexer::namespace{Kermit.Parser}
+@parser::namespace{Kermit.Parser}
 
 @members {
 	IScope currentScope;

@@ -1,6 +1,6 @@
-﻿using Parser;
+﻿using Kermit.Parser;
 
-namespace Interpeter.Types
+namespace Kermit.Interpeter.Types
 {
     public class KFunction : KObject
     {

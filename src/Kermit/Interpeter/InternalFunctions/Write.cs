@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Interpeter.Types;
+using Kermit.Interpeter.Types;
 
-namespace Interpeter.InternalFunctions
+namespace Kermit.Interpeter.InternalFunctions
 {
     internal class Write : NativeFunction
     {

@@ -1,7 +1,7 @@
 ﻿using System;
-using Interpeter.Types;
+using Kermit.Interpeter.Types;
 
-namespace Interpeter.InternalFunctions
+namespace Kermit.Interpeter.InternalFunctions
 {
     class ReadLine : NativeFunction
     {

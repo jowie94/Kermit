@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Interpeter
+namespace Kermit.Interpeter
 {
     [Serializable]
     public class InterpreterException : Exception

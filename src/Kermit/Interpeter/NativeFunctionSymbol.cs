@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Parser;
+﻿using Kermit.Parser;
 
-namespace Interpeter
+namespace Kermit.Interpeter
 {
     internal class NativeFunctionSymbol : FunctionSymbol
     {

@@ -1,4 +1,4 @@
-﻿namespace Interpeter.Types
+﻿namespace Kermit.Interpeter.Types
 {
     public class KLocal
     {

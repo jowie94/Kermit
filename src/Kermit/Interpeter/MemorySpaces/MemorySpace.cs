@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Interpeter.Types;
+using Kermit.Interpeter.Types;
 
-namespace Interpeter.MemorySpaces
+namespace Kermit.Interpeter.MemorySpaces
 {
     public class MemorySpace
     {

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using Interpeter.Types;
-using Parser;
+using Kermit.Interpeter.Types;
+using Kermit.Parser;
 
-namespace Interpeter.InternalFunctions
+namespace Kermit.Interpeter.InternalFunctions
 {
     class PrintFunctions : NativeFunction
     {

@@ -1,9 +1,11 @@
 ﻿using System;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
-using Interpeter;
-using Parser;
-using Parser.Exceptions;
+using Kermit.Interpeter;
+using Kermit.Parser;
+using Kermit.Parser.Exceptions;
+using KermitLexer = Kermit.Parser.KermitLexer;
+using KermitParser = Kermit.Parser.KermitParser;
 
 namespace Terminal
 {

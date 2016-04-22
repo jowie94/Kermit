@@ -1,7 +1,7 @@
 ﻿using System;
-using Interpeter.Types;
+using Kermit.Interpeter.Types;
 
-namespace Interpeter
+namespace Kermit.Interpeter
 {
     public class ReturnValue : Exception
     {

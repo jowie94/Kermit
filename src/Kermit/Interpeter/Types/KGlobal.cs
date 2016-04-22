@@ -1,6 +1,6 @@
-﻿using Interpeter.MemorySpaces;
+﻿using Kermit.Interpeter.MemorySpaces;
 
-namespace Interpeter.Types
+namespace Kermit.Interpeter.Types
 {
     public class KGlobal : KLocal
     {

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Interpeter.MemorySpaces;
-using Interpeter.Types;
-using Parser;
+using Kermit.Interpeter.MemorySpaces;
+using Kermit.Interpeter.Types;
+using Kermit.Parser;
 
-namespace Interpeter
+namespace Kermit.Interpeter
 {
     public abstract class InterpreterState
     {

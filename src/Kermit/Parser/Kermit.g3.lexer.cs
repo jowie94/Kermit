@@ -1,7 +1,7 @@
 ﻿using System;
 using Antlr.Runtime;
 
-namespace Parser
+namespace Kermit.Parser
 {
     public partial class KermitLexer
     {

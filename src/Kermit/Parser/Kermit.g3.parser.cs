@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using Antlr.Runtime;
-using Parser.Exceptions;
+﻿using Antlr.Runtime;
+using Kermit.Parser.Exceptions;
 
-namespace Parser
+namespace Kermit.Parser
 {
     public partial class KermitParser : Antlr.Runtime.Parser
     {

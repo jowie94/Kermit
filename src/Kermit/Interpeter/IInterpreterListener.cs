@@ -1,7 +1,7 @@
 ﻿using System;
 using Antlr.Runtime;
 
-namespace Interpeter
+namespace Kermit.Interpeter
 {
     public interface IInterpreterListener
     {
