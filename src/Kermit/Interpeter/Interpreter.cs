@@ -81,6 +81,9 @@ namespace Kermit.Interpeter
             _currentSpace = _globals;
 
             AddInternalNativeFunctions();
+            AddNativeType("List", typeof(List<object>));
+            AddNativeType(typeof(string));
+            AddNativeType("Dictionary", typeof(Dictionary<object, object>));
         }
 
         public void AddNativeFunction(string name, NativeFunction function)
@@ -88,6 +91,16 @@ namespace Kermit.Interpeter
             function.Name = name;
             NativeFunctionSymbol symbol = new NativeFunctionSymbol(name, GlobalScope, function);
             GlobalScope.Define(symbol);
+        }
+
+        public void AddNativeType(Type type)
+        {
+            GlobalScope.Define(new NativeSymbol(type));
+        }
+
+        public void AddNativeType(string name, Type type)
+        {
+            GlobalScope.Define(new NativeSymbol(name, type));
         }
 
         public void Interpret(ANTLRInputStream input)
@@ -327,9 +340,21 @@ namespace Kermit.Interpeter
 
         private KObject Instance(KermitAST tree)
         {
-            string objName = tree.GetChild(0).Text;
+            KermitAST objName = (KermitAST) tree.GetChild(0);
 
-            throw new NotImplementedException("Instances are currently not supported");
+            Symbol s = objName.Scope.Resolve(objName.Text);
+            if (s is NativeSymbol)
+            {
+                int argCount = tree.ChildCount - 1;
+                object[] args = new object[argCount];
+                for (int i = 0; i < argCount; ++i)
+                {
+                    KermitAST argumentTree = (KermitAST)tree.GetChild(i + 1);
+                    args[i] = Execute(argumentTree).Value;
+                }
+                return InstantiateObject(s as NativeSymbol, args);
+            }
+            throw new InterpreterException($"Type {objName} does not exist");
         }
 
         private KBool Not(KermitAST tree)
@@ -496,6 +521,15 @@ namespace Kermit.Interpeter
 
             if (!obj.SetInnerField(name, value))
                 throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
+        }
+
+        private KObject InstantiateObject(NativeSymbol symbol, object[] arguments)
+        {
+            Type[] types = arguments.Select(x => x.GetType()).ToArray();
+            ConstructorInfo info = symbol.Type.GetConstructor(types);
+            if (info != null)
+                return TypeHelper.ToKObject(info.Invoke(arguments));
+            throw new InterpreterException("There is no constructor with such argument types");
         }
 
         // Load native functions dynamically

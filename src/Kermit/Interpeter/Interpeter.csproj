@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FunctionCallbackInfo.cs" />
-    <Compile Include="InternalFunctions\List.cs" />
     <Compile Include="InternalFunctions\PrintFunctions.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
     <Compile Include="InternalFunctions\ReadLine.cs" />
@@ -61,6 +60,7 @@
     <Compile Include="MemorySpaces\MemorySpace.cs" />
     <Compile Include="MemorySpaces\ScopeSpace.cs" />
     <Compile Include="NativeFunctionSymbol.cs" />
+    <Compile Include="NativeSymbol.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReturnValue.cs" />
     <Compile Include="Types\KBool.cs" />

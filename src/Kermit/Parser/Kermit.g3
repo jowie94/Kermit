@@ -134,8 +134,8 @@ instance
 	KermitAST nameNode = (KermitAST) $instance.tree.GetChild(0);
 	nameNode.Scope = currentScope;
 }
-	:	'new' ID // TODO: Future improvement, support subclasses
-		-> ^('new' ID)
+	:	'new' ID '(' (expr (',' expr )*)? ')' // TODO: Future improvement, support subclasses
+		-> ^('new' ID expr*)
 	;
 
 qid :  ID ('.'^ ID)* ; // Can't be resolved until runtime
