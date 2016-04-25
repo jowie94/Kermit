@@ -8,7 +8,7 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL; DOT='.'; REF='ref';
+	BLOCK; ARGS; CALL; DOT='.'; REF='ref'; INDEX='[';
 	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; NEW='new'; // Keywords
 	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
@@ -116,15 +116,18 @@ notOrAtom
 	;
 
 qatom
-	: atom ('.'^ (ID|call))*;
+	: atom ('.'^ callOrIdArray)* ;
 
 atom
 	: '-'? n=(INT|FLOAT) -> ^(NUM $n '-'?)
 	| CHAR
-	| STRING
 	| ('true'|'false')
-	| ID
-	| call
+	| primary ('['^ (INT|STRING) ']'!)?
+	| callOrIdArray
+	;
+
+primary
+	: STRING
 	| instance
 	| '(' expr ')' -> expr
 	;
@@ -138,8 +141,11 @@ instance
 		-> ^('new' ID expr*)
 	;
 
-qid :  ID ('.'^ ID)* ; // Can't be resolved until runtime
+callOrIdArray : callOrId ('['^ el=(INT|STRING) ']'!)? ;
 
+callOrId : call | ID ;
+
+qid :  ID ('.'^ ID)* ('['^ el=(INT|STRING) ']'!)? ; // Can't be resolved until runtime
 
 /*
  * Lexer Rules

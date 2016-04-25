@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -205,6 +206,7 @@ namespace Kermit.Interpeter
                         return (KFloat) float.Parse(tree.Text);
                     case KermitParser.STRING:
                         return (KString) tree.Text.Substring(1, tree.Text.Length - 2);
+                    case KermitParser.INDEX:
                     case KermitParser.DOT:
                     case KermitParser.ID:
                         return Load(tree);
@@ -384,7 +386,7 @@ namespace Kermit.Interpeter
 
             if (value != null && !value.IsVoid)
             {
-                if (lhs.Type == KermitParser.DOT)
+                if (lhs.Type == KermitParser.DOT || lhs.Type == KermitParser.INDEX)
                 {
                     FieldAssign(lhs, value);
                 }
@@ -405,6 +407,8 @@ namespace Kermit.Interpeter
         {
             if (tree.Type == KermitParser.DOT)
                 return FieldLoad(tree);
+            if (tree.Type == KermitParser.INDEX)
+                return LoadItem(tree);
 
             MemorySpace space = GetSpaceWithSymbol(tree.Text);
             if (space != null)
@@ -493,6 +497,9 @@ namespace Kermit.Interpeter
             KObject val;
             string name;
 
+            if (field.Type == KermitParser.INDEX)
+                field = (KermitAST) field.GetChild(0);
+
             if (field.Type == KermitParser.CALL)
             {
                 name = field.GetChild(0).Text;
@@ -507,9 +514,40 @@ namespace Kermit.Interpeter
                 val = obj.GetInnerField(name);
             }
 
+            field = (KermitAST) field.Parent;
+            if (field.Type == KermitParser.INDEX)
+            {
+                KermitAST memberTree = (KermitAST)field.GetChild(1);
+                val = LoadItem(val, Execute(memberTree));
+                if (val == null)
+                    throw new InterpreterException($"{name} is not enumerable");
+            }
+
             if (val == null)
                 throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
             return val;
+        }
+
+        private KObject LoadItem(KObject enumerable, KObject member)
+        {
+            object obj = enumerable.Value;
+            Type objType = obj.GetType();
+            MethodInfo method;
+            if ((method = objType.GetMethod("GetValue", new[] {typeof(int)})) != null ||
+                (method = objType.GetMethod("get_Item")) != null ||
+                (method = objType.GetMethod("ElementAt")) != null)
+                return TypeHelper.ToKObject(method.Invoke(obj, new[] {member.Value}));
+            return null;
+        }
+
+        private KObject LoadItem(KermitAST tree)
+        {
+            KermitAST expr = (KermitAST)tree.GetChild(0);
+            KermitAST memberTree = (KermitAST)tree.GetChild(1);
+            KObject res = LoadItem(Execute(expr), Execute(memberTree));
+            if (res == null)
+                throw new InterpreterException($"{expr.Text} is not enumerable");
+            return res;
         }
 
         private void FieldAssign(KermitAST tree, KObject value)
@@ -517,10 +555,22 @@ namespace Kermit.Interpeter
             KermitAST leftExpr = (KermitAST)tree.GetChild(0);
             KermitAST field = (KermitAST)tree.GetChild(1);
             KObject obj = Execute(leftExpr);
-            string name = field.Text;
-
-            if (!obj.SetInnerField(name, value))
-                throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
+            if (tree.Type == KermitParser.DOT)
+            {
+                string name = field.Text;
+                if (!obj.SetInnerField(name, value))
+                    throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
+            }
+            else if (tree.Type == KermitParser.INDEX)
+            {
+                object real = obj.Value;
+                Type objType = real.GetType();
+                MethodInfo info = objType.GetMethod("set_Item");
+                if (info != null)
+                    info.Invoke(real, new[] {Execute(field).Value, value.Value});
+                else
+                    throw new InterpreterException($"{tree.Text} is not asignable");
+            }
         }
 
         private KObject InstantiateObject(NativeSymbol symbol, object[] arguments)
