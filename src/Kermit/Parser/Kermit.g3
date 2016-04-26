@@ -68,7 +68,7 @@ soms // Single or multiple statements
 	;
 
 multipleStatements
-	: NL* '{' statementOrNL* '}' NL	-> ^(BLOCK statementOrNL*)
+	: NL* '{' statementOrNL* '}' NL*	-> ^(BLOCK statementOrNL*)
 	;
 
 statementOrNL // Extended statements (include newline)
@@ -81,6 +81,7 @@ statement // Normal statements
 	| 'return' expr NL		-> ^('return' expr)
 	| 'if' '(' expr ')' c=soms ('else' el=soms)?			-> ^('if' expr $c $el?)
 	| 'while' '(' expr ')' soms								-> ^('while' expr soms)
+	| 'do' ms=multipleStatements 'while' '(' expr ')'		-> ^(BLOCK $ms ^(WHILE expr $ms))
 	| 'for' '(' beg=equalOrCall ';' cond=expr ';' wh=equalOrCall ')' soms	-> ^('for' $beg $cond $wh soms)
 	| expr NL				-> ^(RPRINT expr)
 	;
