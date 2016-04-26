@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -9,7 +10,6 @@ namespace Kermit.Interpeter.Types
     [Pure]
     public class TypeHelper
     {
-
         public static KObject ToKObject(object obj)
         {
             if (obj is string)
@@ -97,7 +97,7 @@ namespace Kermit.Interpeter.Types
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             if (obj is KBool)
-                return (KBool)obj;
+                return (KBool) obj;
             if (obj is KString)
                 return ((KString) obj).Value.Length > 0;
             if (obj is KNumber)

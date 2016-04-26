@@ -350,13 +350,7 @@ namespace Kermit.Interpeter
             Symbol s = objName.Scope.Resolve(objName.Text);
             if (s is NativeSymbol)
             {
-                int argCount = tree.ChildCount - 1;
-                object[] args = new object[argCount];
-                for (int i = 0; i < argCount; ++i)
-                {
-                    KermitAST argumentTree = (KermitAST)tree.GetChild(i + 1);
-                    args[i] = Execute(argumentTree).Value;
-                }
+                object[] args = tree.Children.Skip(1).Select(x => Execute((KermitAST) x).Value).ToArray();
                 return InstantiateObject(s as NativeSymbol, args);
             }
             throw new InterpreterException($"Type {objName} does not exist");
@@ -401,8 +395,7 @@ namespace Kermit.Interpeter
                 }
                 else
                 {
-                    MemorySpace space = GetSpaceWithSymbol(lhs.Text);
-                    if (space == null) space = _currentSpace;
+                    MemorySpace space = GetSpaceWithSymbol(lhs.Text) ?? _currentSpace;
                     KLocal var = space[lhs.Text];
                     if (var == null)
                         space[lhs.Text] = new KLocal(lhs.Text, value);
@@ -462,7 +455,7 @@ namespace Kermit.Interpeter
             KObject b = Execute((KermitAST)tree.GetChild(1));
 
             if (a.IsString || b.IsString)
-                return new KString(a.Value.ToString() + b.Value.ToString());
+                return new KString(a.Value + b.Value.ToString());
             return Arithmetic(tree);
         }
 
