@@ -169,6 +169,8 @@ namespace Kermit.Interpeter
                         return Call(tree);
                     case KermitParser.NEW:
                         return Instance(tree);
+                    case KermitParser.ARR:
+                        return CreateArray(tree);
                     // Arithmetic operations
                     case KermitParser.ADD:
                         return Add(tree);
@@ -206,6 +208,7 @@ namespace Kermit.Interpeter
                         return (KFloat) float.Parse(tree.Text);
                     case KermitParser.STRING:
                         return (KString) tree.Text.Substring(1, tree.Text.Length - 2);
+                    // Accessors
                     case KermitParser.INDEX:
                     case KermitParser.DOT:
                     case KermitParser.ID:
@@ -359,6 +362,12 @@ namespace Kermit.Interpeter
             throw new InterpreterException($"Type {objName} does not exist");
         }
 
+        private KObject CreateArray(KermitAST tree)
+        {
+            KObject[] args = tree.Children.Select(x => Execute((KermitAST) x)).ToArray();
+            return new KArray(args);
+        }
+
         private KBool Not(KermitAST tree)
         {
             KObject inner = Execute((KermitAST) tree.GetChild(0));
@@ -505,7 +514,10 @@ namespace Kermit.Interpeter
                 name = field.GetChild(0).Text;
                 object[] args = new object[field.ChildCount - 1];
                 for (int i = 0; i < args.Length; ++i)
-                    args[i] = Execute((KermitAST) field.GetChild(i + 1)).Value;
+                {
+                    KObject ko = Execute((KermitAST) field.GetChild(i + 1));
+                    args[i] = obj is KNativeObject ? ko.Value : ko;
+                }
                 val = obj.CallInnerFunction(name, args);
             }
             else
@@ -530,6 +542,8 @@ namespace Kermit.Interpeter
 
         private KObject LoadItem(KObject enumerable, KObject member)
         {
+            if (enumerable is KArray)
+                return ((KArray) enumerable)[(KInt) member];
             object obj = enumerable.Value;
             Type objType = obj.GetType();
             MethodInfo method;

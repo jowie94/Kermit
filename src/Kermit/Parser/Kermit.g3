@@ -8,7 +8,7 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL; DOT='.'; REF='ref'; INDEX='[';
+	BLOCK; ARGS; CALL; DOT='.'; REF='ref'; INDEX='['; ARR;
 	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; NEW='new'; // Keywords
 	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
@@ -129,6 +129,7 @@ atom
 primary
 	: STRING
 	| instance
+	| '[' (expr (',' expr )*)? ']' -> ^(ARR expr*)
 	| '(' expr ')' -> expr
 	;
 
