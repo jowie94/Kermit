@@ -77,7 +77,7 @@ statementOrNL // Extended statements (include newline)
 	;
 
 statement // Normal statements
-	: qid '=' expr NL		-> ^('=' qid expr)
+	: equal NL!
 	| 'return' expr NL		-> ^('return' expr)
 	| 'if' '(' expr ')' c=soms ('else' el=soms)?			-> ^('if' expr $c $el?)
 	| 'while' '(' expr ')' soms								-> ^('while' expr soms)
@@ -87,8 +87,13 @@ statement // Normal statements
 	;
 
 equalOrCall
-	: qid '=' expr	-> ^('=' qid expr)
+	: equal
 	| call
+	;
+
+equal
+	: qid '=' expr	-> ^('=' qid expr)
+	| qid ex=('+'|'-'|'*'|'/') '=' expr	-> ^('=' qid ^($ex qid expr))
 	;
 
 refOrExpr
