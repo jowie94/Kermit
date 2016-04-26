@@ -9,7 +9,7 @@ namespace Kermit.Interpeter
 {
     public abstract class InterpreterState
     {
-        public MemorySpace _globals = new MemorySpace("globals"); // TODO: Public just for debugging! MUST BE INTERNAL
+        protected MemorySpace _globals = new MemorySpace("globals");
         private IScope _globalScope;
         internal Stack<FunctionSpace> _stack = new Stack<FunctionSpace>();
 

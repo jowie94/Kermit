@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Kermit.Interpeter;
@@ -62,12 +63,10 @@ namespace Terminal
 
         public static void Loop()
         {
-            GlobalScope globalScope = new GlobalScope();
             bool exit = false;
             string input = "";
-            Interpreter interpreter = new Interpreter(globalScope, new SimpleListener());
+            Interpreter interpreter = new Interpreter(new SimpleListener());
             interpreter.ReplMode = true;
-            globalScope.CommitScope();
             while (!exit)
             {
                 if (input == string.Empty)
@@ -88,18 +87,12 @@ namespace Terminal
                 try
                 {
                     interpreter.Interpret(input);
-                    globalScope.CommitScope();
                     input = "";
-                    //Console.WriteLine(interpreter._globals);
                 }
-                catch (PartialStatement)
-                {
-                    globalScope.RevertScope();
-                }
+                catch (PartialStatement) {}
                 catch (ParserException e)
                 {
                     Console.Error.WriteLine(e.Message);
-                    globalScope.RevertScope();
                     input = "";
                 }
             }
@@ -107,10 +100,9 @@ namespace Terminal
 
         public static void Loop2()
         {
-            GlobalScope globalScope = new GlobalScope();
             bool exit = false;
             string input = "";
-            KermitParser parser = new KermitParser(null, globalScope);
+            KermitParser parser = new KermitParser(null);
             parser.TreeAdaptor = new KermitAdaptor();
             while (!exit)
             {
@@ -130,17 +122,14 @@ namespace Terminal
                     DotTreeGenerator gen = new DotTreeGenerator();
                     Console.WriteLine("{0}", gen.ToDot(tree));
                     input = "";
-                    globalScope.CommitScope();
 
-                    Console.WriteLine(globalScope.ToString());
+                    //Console.WriteLine(globalScope.ToString());
                 }
                 catch (PartialStatement)
                 {
-                    globalScope.RevertScope();
                 }
                 catch (ParserException e)
                 {
-                    globalScope.RevertScope();
                 }
             }
         }

@@ -8,6 +8,7 @@ using Antlr.Runtime.Tree;
 using Kermit.Interpeter.MemorySpaces;
 using Kermit.Interpeter.Types;
 using Kermit.Parser;
+using Kermit.Parser.Exceptions;
 using KermitLexer = Kermit.Parser.KermitLexer;
 using KermitParser = Kermit.Parser.KermitParser;
 
@@ -65,6 +66,11 @@ namespace Kermit.Interpeter
 
         public bool ReplMode = false;
 
+        public Interpreter(IInterpreterListener listener) : this(new GlobalScope(), listener)
+        {
+            ((GlobalScope) GlobalScope).CommitScope();
+        }
+
         public Interpreter(IScope globalScope) : this(globalScope, new DummyListener()) {}
 
         public readonly ReturnValue SharedReturnValue = new ReturnValue();
@@ -107,19 +113,24 @@ namespace Kermit.Interpeter
             GlobalScope.Define(new NativeSymbol(name, type));
         }
 
-        public void Interpret(ANTLRInputStream input)
+        public void Interpret(ANTLRStringStream input)
         {
-            // TODO
-        }
-
-        public void Interpret(string input)
-        {
-            ANTLRStringStream stream = new ANTLRStringStream(input, "<stdin>");
-            KermitLexer lexer = new KermitLexer(stream);
+            KermitLexer lexer = new KermitLexer(input);
             TokenRewriteStream tokens = new TokenRewriteStream(lexer);
             _parser.TokenStream = tokens;
 
-            var ret = _parser.program();
+            AstParserRuleReturnScope<KermitAST, CommonToken> ret;
+            try
+            {
+                ret = _parser.program();
+            }
+            catch (Exception e) when (e is ParserException || e is PartialStatement)
+            {
+                ComitableScope g = GlobalScope as ComitableScope;
+                g?.RevertScope();
+                throw;
+            }
+
             if (_parser.NumberOfSyntaxErrors == 0)
             {
                 _root = ret.Tree;
@@ -131,6 +142,12 @@ namespace Kermit.Interpeter
                 //throw new InterpreterException($"{_parser.NumberOfSyntaxErrors} syntax errors"); // TODO: Better exception
                 Listener.Error($"{_parser.NumberOfSyntaxErrors} syntax errors");
             }
+        }
+
+        public void Interpret(string input)
+        {
+            ANTLRStringStream stream = new ANTLRStringStream(input, "<stdin>");
+            Interpret(stream);
         }
 
         private void Block(KermitAST tree)

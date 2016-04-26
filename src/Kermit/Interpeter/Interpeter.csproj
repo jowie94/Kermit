@@ -45,7 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComitableScope.cs" />
     <Compile Include="FunctionCallbackInfo.cs" />
+    <Compile Include="GlobalScope.cs" />
     <Compile Include="InternalFunctions\PrintFunctions.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
     <Compile Include="InternalFunctions\ReadLine.cs" />
