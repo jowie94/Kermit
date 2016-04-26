@@ -8,7 +8,7 @@ options {
 }
 
 tokens {
-	BLOCK; ARGS; CALL; DOT='.'; REF='ref'; INDEX='['; ARR;
+	BLOCK; ARGS; CALL; DOT='.'; REF='ref'; INDEX='['; ARR; RPRINT;
 	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; NEW='new'; // Keywords
 	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
@@ -77,23 +77,18 @@ statementOrNL // Extended statements (include newline)
 	;
 
 statement // Normal statements
-	: equalOrCall NL		-> equalOrCall
+	: qid '=' expr NL		-> ^('=' qid expr)
 	| 'return' expr NL		-> ^('return' expr)
 	| 'if' '(' expr ')' c=soms ('else' el=soms)?			-> ^('if' expr $c $el?)
 	| 'while' '(' expr ')' soms								-> ^('while' expr soms)
 	| 'for' '(' beg=equalOrCall ';' cond=expr ';' wh=equalOrCall ')' soms	-> ^('for' $beg $cond $wh soms)
+	| expr NL				-> ^(RPRINT expr)
 	;
 
 equalOrCall
 	: qid '=' expr	-> ^('=' qid expr)
 	| call
 	;
-
-call
-@after {
-	$call.tree.Scope = currentScope;
-}
-	: name=ID '(' (refOrExpr (',' refOrExpr)*)? ')' -> ^(CALL ID refOrExpr*) ;
 
 refOrExpr
 	: 'ref' qid	-> ^('ref' qid)
@@ -145,6 +140,12 @@ instance
 callOrIdArray : callOrId ('['^ el=(INT|STRING) ']'!)? ;
 
 callOrId : call | ID ;
+
+call
+@after {
+	$call.tree.Scope = currentScope;
+}
+	: name=ID '(' (refOrExpr (',' refOrExpr)*)? ')' -> ^(CALL ID refOrExpr*) ;
 
 qid :  ID ('.'^ ID)* ('['^ el=(INT|STRING) ']'!)? ; // Can't be resolved until runtime
 

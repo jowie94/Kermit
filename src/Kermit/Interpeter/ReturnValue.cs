@@ -5,6 +5,14 @@ namespace Kermit.Interpeter
 {
     public class ReturnValue : Exception
     {
-        public KObject Value;
+        private KObject _value;
+
+        public KObject Value
+        {
+            get { return _value; }
+            set {
+                _value = value ?? new KVoid();
+            }
+        }
     }
 }

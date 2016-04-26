@@ -32,6 +32,11 @@ namespace Terminal
 
         private class SimpleListener : IInterpreterListener
         {
+            public void Print(string msg)
+            {
+                Console.WriteLine(msg);
+            }
+
             public void Info(string msg)
             {
                 Console.WriteLine(msg);
@@ -61,6 +66,7 @@ namespace Terminal
             bool exit = false;
             string input = "";
             Interpreter interpreter = new Interpreter(globalScope, new SimpleListener());
+            interpreter.ReplMode = true;
             globalScope.CommitScope();
             while (!exit)
             {
@@ -84,7 +90,7 @@ namespace Terminal
                     interpreter.Interpret(input);
                     globalScope.CommitScope();
                     input = "";
-                    Console.WriteLine(interpreter._globals);
+                    //Console.WriteLine(interpreter._globals);
                 }
                 catch (PartialStatement)
                 {

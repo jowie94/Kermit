@@ -19,6 +19,7 @@ namespace Kermit.Interpeter
         #region Internal classes
         private class DummyListener : IInterpreterListener
         {
+            public void Print(string msg) {}
             public void Info(string msg) {}
             public void Error(string msg) {}
             public void Error(string msg, Exception e) {}
@@ -61,6 +62,8 @@ namespace Kermit.Interpeter
                 _listener = value;
             }
         }
+
+        public bool ReplMode = false;
 
         public Interpreter(IScope globalScope) : this(globalScope, new DummyListener()) {}
 
@@ -147,6 +150,9 @@ namespace Kermit.Interpeter
             {
                 switch (tree.Type)
                 {
+                    case KermitParser.RPRINT:
+                        ReplPrint(tree);
+                        break;
                     case KermitParser.BLOCK:
                         Block(tree);
                         break;
@@ -228,6 +234,14 @@ namespace Kermit.Interpeter
             }
 
             return null;
+        }
+
+        private void ReplPrint(KermitAST tree)
+        {
+            KermitAST exec = (KermitAST) tree.GetChild(0);
+            KObject obj = Execute(exec);
+            if (ReplMode && obj != null && !(obj is KVoid))
+                Listener.Print(obj.Value.ToString());
         }
 
         private void WhileLoop(KermitAST tree)
