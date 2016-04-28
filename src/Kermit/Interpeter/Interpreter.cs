@@ -137,9 +137,9 @@ namespace Kermit.Interpeter
 
                 Block(_root);
             }
-            else
+            else // We shouldn't reach this condition never
             {
-                //throw new InterpreterException($"{_parser.NumberOfSyntaxErrors} syntax errors"); // TODO: Better exception
+                //throw new InterpreterException($"{_parser.NumberOfSyntaxErrors} syntax errors");
                 Listener.Error($"{_parser.NumberOfSyntaxErrors} syntax errors");
             }
         }

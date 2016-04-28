@@ -24,6 +24,11 @@ namespace Kermit.Interpeter.Types
             return Value.Equals(other.Value);
         }
 
+        public override string ToString()
+        {
+            return string.Join(", ", Value.Select(x => x.Value.ToString()));
+        }
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

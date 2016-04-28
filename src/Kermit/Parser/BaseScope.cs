@@ -20,6 +20,7 @@ namespace Kermit.Parser
 
         public virtual void Define(Symbol sym)
         {
+            // TODO: Allow symbol redefinition if REPL
             _symbols.Add(sym.Name, sym);
             sym.Scope = this;
         }
