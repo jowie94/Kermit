@@ -28,10 +28,7 @@ namespace Kermit.Interpeter.Types
             return Equals((KBool) obj);
         }
 
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
         public static implicit operator bool(KBool b)
         {
@@ -65,6 +62,20 @@ namespace Kermit.Interpeter.Types
 
         public static KBool True => new KBool(true);
         public static KBool False => new KBool(false);
+
+        protected override object GetValue()
+        {
+            return Value;
+        }
+
+        protected override void SetValue(object obj)
+        {
+            if (obj is bool)
+                Value = (bool) obj;
+            else
+                throw new InvalidCastException("The value is not of type bool");
+        }
+
 
         protected override bool Not()
         {

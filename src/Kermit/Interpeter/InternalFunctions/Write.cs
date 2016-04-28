@@ -18,7 +18,7 @@ namespace Kermit.Interpeter.InternalFunctions
             {
                 object[] obj = new object[info.Length - 1];
                 for (int i = 1; i < info.Length; ++i)
-                    obj[i - 1] = info[i].Value.Value;
+                    obj[i - 1] = Cast<object>(info[i]);
                 msg = string.Format(msg, obj);
             }
                 

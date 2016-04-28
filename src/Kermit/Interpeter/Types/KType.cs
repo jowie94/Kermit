@@ -17,7 +17,7 @@ namespace Kermit.Interpeter.Types
 
         protected bool Equals(KType other)
         {
-            return Value.Equals(other.Value);
+            return Value == other.Value;
         }
 
         public override bool Equals(object obj)
@@ -28,9 +28,19 @@ namespace Kermit.Interpeter.Types
             return Equals((KType) obj);
         }
 
-        public override int GetHashCode()
+        public override int GetHashCode() => base.GetHashCode();
+
+        protected override object GetValue()
         {
-            return Value.GetHashCode();
+            return Value;
+        }
+
+        protected override void SetValue(object obj)
+        {
+            if (obj is Type)
+                Value = (Type) obj;
+            else
+                throw new InvalidCastException("The value is not of type Type");
         }
 
         protected override bool Not()

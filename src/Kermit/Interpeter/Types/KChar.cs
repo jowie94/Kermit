@@ -8,7 +8,7 @@ namespace Kermit.Interpeter.Types
 {
     public class KChar : KObject, IComparable
     {
-        public char Value;
+        public new char Value;
 
         public KChar(char value)
         {
@@ -28,6 +28,8 @@ namespace Kermit.Interpeter.Types
             return Equals((KChar) obj);
         }
 
+        public override int GetHashCode() => base.GetHashCode();
+
         public int CompareTo(object obj)
         {
             KChar ch = obj as KChar;
@@ -44,6 +46,19 @@ namespace Kermit.Interpeter.Types
         public static implicit operator char(KChar ch)
         {
             return ch.Value;
+        }
+
+        protected override object GetValue()
+        {
+            return Value;
+        }
+
+        protected override void SetValue(object obj)
+        {
+            if (obj is char)
+                Value = (char) obj;
+            else
+                throw new InvalidCastException("The value is not of type char");
         }
 
         protected override bool Not()

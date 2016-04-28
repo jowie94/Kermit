@@ -31,8 +31,6 @@ namespace Kermit.Interpeter.Types
                 throw new ArgumentNullException(nameof(obj));
             if (obj is T)
                 return (T) obj;
-            if (typeof(T).IsSubclassOf(typeof(KNumber)) && obj.GetType().IsSubclassOf(typeof(KNumber)))
-                return (T) obj;
             throw new InvalidCastException($"Type {obj.GetType().Name} is not casteable to {typeof(T).Name}");
         }
 

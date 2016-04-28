@@ -28,6 +28,8 @@ namespace Kermit.Interpeter.Types
             return Equals((KInt) obj);
         }
 
+        public override int GetHashCode() => base.GetHashCode();
+
         public override int ToInt()
         {
             return Value;
@@ -41,6 +43,19 @@ namespace Kermit.Interpeter.Types
         public static explicit operator KBool(KInt num)
         {
             return num.ToInt() != 0;
+        }
+
+        protected override object GetValue()
+        {
+            return Value;
+        }
+
+        protected override void SetValue(object obj)
+        {
+            if (obj is int)
+                Value = (int) obj;
+            else
+                throw new InvalidCastException("The value is not of type int");
         }
     }
 }

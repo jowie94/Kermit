@@ -4,7 +4,7 @@
     {
         private KObject _value;
 
-        public virtual KObject Value // TODO: Maybe should be internal
+        public virtual KObject Value
         {
             get { return _value; }
             set { _value = value; }

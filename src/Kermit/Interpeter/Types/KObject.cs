@@ -12,8 +12,8 @@ namespace Kermit.Interpeter.Types
     {
         public virtual object Value
         {
-            get { return GetType().GetField("Value").GetValue(this); }
-            set { GetType().GetField("Value").SetValue(this, value); }
+            get { return GetValue(); }
+            set { SetValue(value); }
         }
 
         public bool IsVoid => Is<KVoid>();
@@ -43,6 +43,10 @@ namespace Kermit.Interpeter.Types
         {
             return !(obj1 == obj2);
         }
+
+        public abstract override bool Equals(object obj);
+
+        public override int GetHashCode() => Value?.GetHashCode() ?? 0;
 
         public override string ToString()
         {
@@ -91,6 +95,10 @@ namespace Kermit.Interpeter.Types
                 return new KVoid();
             return TypeHelper.ToKObject(ret);
         }
+
+        protected abstract object GetValue();
+
+        protected abstract void SetValue(object obj);
 
         protected abstract bool Not();
     }

@@ -33,6 +33,11 @@ namespace Kermit.Interpeter
             }
         }
 
+        protected T Cast<T>(KLocal var)
+        {
+            return (T) var.Value.Value;
+        }
+
         protected bool TryCast<T>(KLocal var, out T casted)
         {
             if (var.Value.Value is T)

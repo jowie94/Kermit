@@ -28,6 +28,8 @@ namespace Kermit.Interpeter.Types
             return Equals((KFloat) obj);
         }
 
+        public override int GetHashCode() => base.GetHashCode();
+
         public override int ToInt()
         {
             return Convert.ToInt32(Value);
@@ -36,6 +38,19 @@ namespace Kermit.Interpeter.Types
         public override float ToFloat()
         {
             return Value;
+        }
+
+        protected override object GetValue()
+        {
+            return Value;
+        }
+
+        protected override void SetValue(object obj)
+        {
+            if (obj is float)
+                Value = (float) obj;
+            else
+                throw new InvalidCastException("The value is not of type float");
         }
     }
 }

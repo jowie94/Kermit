@@ -13,7 +13,8 @@ namespace Kermit.Interpeter.InternalFunctions
         {
             if (info.Length != 1)
                 throw new ArgumentException("Expecting one parameter");
-            KType ret = new KType(info[0].Value.GetType());
+            object obj = Cast<object>(info[0]);
+            KType ret = new KType(obj.GetType());
             info.ReturnValue.Value = ret;
         }
     }
