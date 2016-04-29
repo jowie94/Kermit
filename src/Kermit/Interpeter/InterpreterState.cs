@@ -11,6 +11,7 @@ namespace Kermit.Interpeter
     {
         protected MemorySpace _globals = new MemorySpace("globals");
         private IScope _globalScope;
+        private IInterpreterListener _listener;
         internal Stack<FunctionSpace> _stack = new Stack<FunctionSpace>();
 
         public IScope GlobalScope
@@ -25,7 +26,10 @@ namespace Kermit.Interpeter
         }
 
         public string[] StackTrace =>
-            _stack.Select(x => (x.FunctionDefinition is NativeFunctionSymbol ? "(Native) " : "") + x.FunctionDefinition.Name).Reverse().ToArray();
+            _stack.Select(
+                x => (x.FunctionDefinition is NativeFunctionSymbol ? "(Native) " : "") + x.FunctionDefinition.Name)
+                .Reverse()
+                .ToArray();
 
         public KGlobal GetGlobalVariable(string name)
         {
@@ -39,5 +43,18 @@ namespace Kermit.Interpeter
         }
 
         public abstract KObject CallFunction(KFunction function, List<KLocal> parameters);
+
+        protected IInterpreterListener Listener
+        {
+            get { return _listener; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException();
+                _listener = value;
+            }
+        }
+
+        public IInterpreterListener IO => _listener;
     }
 }

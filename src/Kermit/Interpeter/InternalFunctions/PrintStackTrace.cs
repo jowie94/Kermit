@@ -12,8 +12,7 @@ namespace Kermit.Interpeter.InternalFunctions
         public override void Execute(FunctionCallbackInfo info)
         {
             string[] stack = info.InterpreterState.StackTrace;
-            KFunction write = info.InterpreterState.GetFunction("Write");
-            info.InterpreterState.CallFunction(write, TypeHelper.ToParameterList(string.Join("\n", stack)));
+            info.InterpreterState.IO.Write(string.Join("\n", stack));
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Kermit.Interpeter.InternalFunctions
                 msg = string.Format(msg, obj);
             }
                 
-            Console.WriteLine(msg);
+            info.InterpreterState.IO.Write(msg);
         }
     }
 }

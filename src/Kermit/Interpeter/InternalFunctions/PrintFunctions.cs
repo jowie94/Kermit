@@ -10,8 +10,7 @@ namespace Kermit.Interpeter.InternalFunctions
         {
             string msg = string.Join("\n", info.InterpreterState.GlobalScope.SymbolList.Where(x => x is FunctionSymbol)
                 .Select(x => "- " + x.Name).ToArray());
-            KFunction write = info.InterpreterState.GetFunction("Write");
-            info.InterpreterState.CallFunction(write, TypeHelper.ToParameterList(msg));
+            info.InterpreterState.IO.Write(msg);
         }
     }
 }

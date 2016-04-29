@@ -33,7 +33,7 @@ namespace Terminal
 
         private class SimpleListener : IInterpreterListener
         {
-            public void Print(string msg)
+            public void Write(string msg)
             {
                 Console.WriteLine(msg);
             }
@@ -58,6 +58,11 @@ namespace Terminal
             {
                 Console.Error.WriteLine(msg);
                 Console.Error.WriteLine("Token: " + token.Text);
+            }
+
+            public string ReadLine()
+            {
+                return Console.ReadLine();
             }
         }
 

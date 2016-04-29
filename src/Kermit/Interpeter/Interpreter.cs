@@ -20,11 +20,12 @@ namespace Kermit.Interpeter
         #region Internal classes
         private class DummyListener : IInterpreterListener
         {
-            public void Print(string msg) {}
+            public void Write(string msg) {}
             public void Info(string msg) {}
             public void Error(string msg) {}
             public void Error(string msg, Exception e) {}
             public void Error(string msg, IToken token) {}
+            public string ReadLine() => string.Empty;
         }
 
         class KermitAdaptor : CommonTreeAdaptor
@@ -47,22 +48,11 @@ namespace Kermit.Interpeter
 #endregion
 
         #region Private fields
-        private IInterpreterListener _listener;
+        
         private KermitParser _parser;
         private KermitAST _root;
         private MemorySpace _currentSpace;
         #endregion
-
-        public IInterpreterListener Listener
-        {
-            get { return _listener; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException();
-                _listener = value;
-            }
-        }
 
         public bool ReplMode = false;
 
@@ -83,7 +73,7 @@ namespace Kermit.Interpeter
 
             if (listener == null)
                 throw new ArgumentNullException(nameof(listener), "Listener can't be null");
-            _listener = listener;
+            Listener = listener;
 
             _parser = new KermitParser(null, globalScope) {TreeAdaptor = new KermitAdaptor()};
             //_parser.TraceDestination = Console.Error;
@@ -258,7 +248,7 @@ namespace Kermit.Interpeter
             KermitAST exec = (KermitAST) tree.GetChild(0);
             KObject obj = Execute(exec);
             if (ReplMode && obj != null && !(obj is KVoid))
-                Listener.Print(obj.Value.ToString());
+                Listener.Write(obj.Value.ToString());
         }
 
         private void WhileLoop(KermitAST tree)

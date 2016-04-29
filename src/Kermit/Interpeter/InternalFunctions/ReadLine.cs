@@ -8,7 +8,7 @@ namespace Kermit.Interpeter.InternalFunctions
         public override void Execute(FunctionCallbackInfo info)
         {
             Console.Write("Input: ");
-            string res = Console.ReadLine();
+            string res = info.InterpreterState.IO.ReadLine();
             info.ReturnValue.Value = TypeHelper.ToKObject(res);
         }
     }
