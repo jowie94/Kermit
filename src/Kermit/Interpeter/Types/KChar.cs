@@ -1,4 +1,5 @@
 ﻿using System;
+using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
@@ -31,7 +32,8 @@ namespace Kermit.Interpeter.Types
             KChar ch = obj as KChar;
             if (ch != null)
                 return Value.CompareTo(ch.Value);
-            throw new ArgumentException("Object is not of type character");
+            ThrowHelper.TypeError("Object is not of type KChar");
+            return 0;
         }
 
         public static implicit operator KChar(char ch)

@@ -1,4 +1,5 @@
 ﻿using System;
+using Kermit.Interpeter.Exceptions;
 using Kermit.Interpeter.Types;
 
 namespace Kermit.Interpeter
@@ -9,12 +10,12 @@ namespace Kermit.Interpeter
 
         protected void Error(string msg, Exception e)
         {
-            throw new InterpreterException(msg, e);
+            ThrowHelper.InterpreterException(msg, e);
         }
 
         protected void Error(string msg)
         {
-            throw new InterpreterException(msg);
+            ThrowHelper.InterpreterException(msg);
         }
 
         internal void SafeExecute(FunctionCallbackInfo info)
@@ -29,7 +30,7 @@ namespace Kermit.Interpeter
             }
             catch (Exception e)
             {
-                Error($"Function {Name} throwed an exception", e);
+                ThrowHelper.NativeFunctionError(Name, e);
             }
         }
 

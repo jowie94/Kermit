@@ -11,25 +11,6 @@ namespace Terminal
 {
     class Repl
     {
-        // TODO: Move out when interpreter is ready
-        class KermitAdaptor : CommonTreeAdaptor
-        {
-            public override object Create(IToken payload)
-            {
-                return new KermitAST(payload);
-            }
-
-            public override object DupNode(object treeNode)
-            {
-                return treeNode == null ? null : Create(((KermitAST)treeNode).Token);
-            }
-
-            public override object ErrorNode(ITokenStream input, IToken start, IToken stop, RecognitionException e)
-            {
-                return new KermitErrorNode(input, start, stop, e);
-            }
-        }
-
         private class SimpleListener : IInterpreterListener
         {
             public void Write(string msg)
@@ -47,10 +28,15 @@ namespace Terminal
                 Console.Error.WriteLine(msg);
             }
 
+            public void Error(Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+            }
+
             public void Error(string msg, Exception e)
             {
                 Console.Error.WriteLine(msg);
-                Console.Error.WriteLine(e.Message);
+                Error(e);
             }
 
             public void Error(string msg, IToken token)
@@ -107,7 +93,7 @@ namespace Terminal
             bool exit = false;
             string input = "";
             KermitParser parser = new KermitParser(null);
-            parser.TreeAdaptor = new KermitAdaptor();
+            //parser.TreeAdaptor = new KermitAdaptor();
             while (!exit)
             {
                 if (input == string.Empty)

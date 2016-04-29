@@ -8,6 +8,7 @@ namespace Kermit.Interpeter
         void Write(string msg);
         void Info(string msg);
         void Error(string msg);
+        void Error(Exception e);
         void Error(string msg, Exception e);
         void Error(string msg, IToken token);
         string ReadLine();

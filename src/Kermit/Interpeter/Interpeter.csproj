@@ -51,13 +51,14 @@
     <Compile Include="InternalFunctions\PrintFunctions.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
     <Compile Include="InternalFunctions\ReadLine.cs" />
+    <Compile Include="Exceptions\ThrowHelper.cs" />
     <Compile Include="InternalFunctions\TypeOf.cs" />
     <Compile Include="InternalFunctions\Write.cs" />
     <Compile Include="InterpreterState.cs" />
     <Compile Include="NativeFunction.cs" />
     <Compile Include="IInterpreterListener.cs" />
     <Compile Include="Interpreter.cs" />
-    <Compile Include="InterpreterException.cs" />
+    <Compile Include="Exceptions\InterpreterException.cs" />
     <Compile Include="MemorySpaces\FunctionSpace.cs" />
     <Compile Include="MemorySpaces\MemorySpace.cs" />
     <Compile Include="MemorySpaces\ScopeSpace.cs" />

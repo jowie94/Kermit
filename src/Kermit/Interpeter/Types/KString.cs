@@ -1,4 +1,5 @@
 ﻿using System;
+using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
@@ -41,7 +42,8 @@ namespace Kermit.Interpeter.Types
             KString ch = obj as KString;
             if (ch != null)
                 return string.Compare(Value, ch.Value, StringComparison.Ordinal);
-            throw new ArgumentException("Object is not of type character");
+            ThrowHelper.TypeError("Object is not of type string");
+            return 0;
         }
 
         protected override object GetValue()

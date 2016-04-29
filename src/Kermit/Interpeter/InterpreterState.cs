@@ -29,6 +29,7 @@ namespace Kermit.Interpeter
         public string[] StackTrace =>
             Stack.Select(
                 x => (x.FunctionDefinition is NativeFunctionSymbol ? "(Native) " : "") + x.FunctionDefinition.Name)
+                .Concat(new[] {"Global"})
                 .Reverse()
                 .ToArray();
 

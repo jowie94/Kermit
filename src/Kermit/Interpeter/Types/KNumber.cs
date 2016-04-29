@@ -1,4 +1,5 @@
 ﻿using System;
+using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
@@ -65,10 +66,9 @@ namespace Kermit.Interpeter.Types
         {
             KNumber num = obj as KNumber;
             if (num != null)
-            {
                 return ((IComparable) Value).CompareTo(num.Value);
-            }
-            throw new ArgumentException("Object is not a number");
+            ThrowHelper.TypeError("Object is not a number");
+            return 0;
         }
     }
 }

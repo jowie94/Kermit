@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
@@ -31,7 +32,8 @@ namespace Kermit.Interpeter.Types
                 throw new ArgumentNullException(nameof(obj));
             if (obj is T)
                 return (T) obj;
-            throw new InvalidCastException($"Type {obj.GetType().Name} is not casteable to {typeof(T).Name}");
+            ThrowHelper.TypeError($"Type {obj.GetType().Name} is not casteable to {typeof(T).Name}");
+            return null;
         }
 
         public static List<KLocal> ToParameterList(params object[] parameters)
@@ -70,7 +72,8 @@ namespace Kermit.Interpeter.Types
                 if (int.TryParse(str, out res))
                     return new KInt(res);
             }
-            throw new InvalidCastException($"Can't convert {obj.GetType().Name} to int");
+            ThrowHelper.TypeError($"Can't convert {obj.GetType().Name} to int");
+            return null;
         }
 
         public static KFloat ToFloat(KObject obj)
@@ -87,7 +90,8 @@ namespace Kermit.Interpeter.Types
                 if (float.TryParse(str, out res))
                     return new KFloat(res);
             }
-            throw new InvalidCastException($"Can't convert {obj.GetType().Name} to float");
+            ThrowHelper.TypeError($"Can't convert {obj.GetType().Name} to float");
+            return null;
         }
 
         public static KBool ToBool(KObject obj)
@@ -102,7 +106,8 @@ namespace Kermit.Interpeter.Types
                 return ((KNumber) obj).ToInt() != 0;
             if (obj is KChar)
                 return true;
-            throw new InvalidCastException($"Can't convert {obj.GetType().Name} to bool");
+            ThrowHelper.TypeError($"Can't convert {obj.GetType().Name} to bool");
+            return null;
         }
     }
 }

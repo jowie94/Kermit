@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using Kermit.Interpeter.Exceptions;
 using Kermit.Interpeter.MemorySpaces;
 using Kermit.Interpeter.Types;
 using Kermit.Parser;
@@ -22,6 +23,8 @@ namespace Kermit.Interpeter
             public void Write(string msg) {}
             public void Info(string msg) {}
             public void Error(string msg) {}
+            public void Error(Exception e) {}
+
             public void Error(string msg, Exception e) {}
             public void Error(string msg, IToken token) {}
             public string ReadLine() => string.Empty;
@@ -126,7 +129,21 @@ namespace Kermit.Interpeter
             {
                 _root = ret.Tree;
 
-                Block(_root);
+                try
+                {
+                    Block(_root);
+                }
+                catch (InterpreterException e)
+                {
+                    if (e.CallStack != null)
+                    {
+                        Listener.Error("CallStack:");
+                        foreach (string call in e.CallStack)
+                            Listener.Error(" - " + call);
+                    }
+                    Listener.Error(e);
+                    Stack.Clear(); // Clear the function stack after an error
+                }
             }
             else // We shouldn't reach this condition never
             {
@@ -232,14 +249,14 @@ namespace Kermit.Interpeter
                         throw new InvalidOperationException("Node " + tree.Text + "<" + tree.Type + "> not handled");
                 }
             }
-            catch (ReturnValue)
+            catch (InterpreterException e) when (e.CallStack == null)
             {
+                e.CallStack = StackTrace;
                 throw;
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is InterpreterException || e is ReturnValue))
             {
-                Listener.Error("Problem executing: " + tree.ToStringTree(), e);
-                //_stack.Clear();
+                ThrowHelper.InterpreterException(e.Message, e, StackTrace);
             }
 
             return null;
@@ -331,7 +348,8 @@ namespace Kermit.Interpeter
 
             if (function == null)
             {
-                Listener.Error($"Function name {fName} is not defined");
+                ThrowHelper.NameNotExists(fName, StackTrace);
+                //Listener.Error($"Function name {fName} is not defined");
                 return null;
             }
 
@@ -341,7 +359,8 @@ namespace Kermit.Interpeter
                 (function.Value.Arguments == null && argCount > 0 ||
                 function.Value.Arguments != null && argCount != function.Value.Arguments.Count))
             {
-                Listener.Error($"Function {fName}: argument list mismatch");
+                ThrowHelper.TypeError($"Function {fName} takes {argCount} arguments", StackTrace);
+                //Listener.Error($"Function {fName}: argument list mismatch");
                 return null;
             }
 
@@ -376,7 +395,8 @@ namespace Kermit.Interpeter
                 object[] args = tree.Children.Skip(1).Select(x => Execute((KermitAST) x).Value).ToArray();
                 return InstantiateObject(s as NativeSymbol, args);
             }
-            throw new InterpreterException($"Type {objName} does not exist");
+            ThrowHelper.NameNotExists(objName.Text, StackTrace);
+            return null;
         }
 
         private KObject CreateArray(KermitAST tree)
@@ -438,7 +458,8 @@ namespace Kermit.Interpeter
             MemorySpace space = GetSpaceWithSymbol(tree.Text);
             if (space != null)
                 return space[tree.Text].Value;
-            Listener.Error("No such variable " + tree.Text, tree.Token); // TODO: Should throw exception
+            ThrowHelper.NameNotExists(tree.Text, StackTrace);
+            //Listener.Error("No such variable " + tree.Text, tree.Token);
             return null;
         }
 
@@ -469,7 +490,9 @@ namespace Kermit.Interpeter
             {
                 return ((IComparable)a).CompareTo(b);
             }
-            throw new ArgumentException("Types are not comparable");
+            string name = a.Is<IComparable>() ? b.GetType().Name : a.GetType().Name;
+            ThrowHelper.TypeError($"Type {name} is not comparable");
+            return -1;
         }
 
         private KObject Add(KermitAST tree)
@@ -498,7 +521,8 @@ namespace Kermit.Interpeter
                     return a/b;
             }
 
-            // TODO: Maybe throw error?
+            // We shouldn't reach this fragment
+            ThrowHelper.TypeError($"Unsupported arithmetic operation {tree.Text}");
             return null;
         }
 
@@ -548,11 +572,11 @@ namespace Kermit.Interpeter
                 KermitAST memberTree = (KermitAST)field.GetChild(1);
                 val = LoadItem(val, Execute(memberTree));
                 if (val == null)
-                    throw new InterpreterException($"{name} is not enumerable");
+                    ThrowHelper.TypeError($"'{name}' is not enumerable", StackTrace);
             }
 
             if (val == null)
-                throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
+                ThrowHelper.NoFieldError(obj.Value.GetType().Name, name, StackTrace);
             return val;
         }
 
@@ -576,7 +600,7 @@ namespace Kermit.Interpeter
             KermitAST memberTree = (KermitAST)tree.GetChild(1);
             KObject res = LoadItem(Execute(expr), Execute(memberTree));
             if (res == null)
-                throw new InterpreterException($"{expr.Text} is not enumerable");
+                ThrowHelper.TypeError($"'{expr.Text}' is not enumerable", StackTrace);
             return res;
         }
 
@@ -589,7 +613,7 @@ namespace Kermit.Interpeter
             {
                 string name = field.Text;
                 if (!obj.SetInnerField(name, value))
-                    throw new InterpreterException($"Type {obj.Value.GetType().Name} has no field called {name}");
+                    ThrowHelper.NoFieldError(obj.Value.GetType().Name, name, StackTrace);
             }
             else if (tree.Type == KermitParser.INDEX)
             {
@@ -599,7 +623,7 @@ namespace Kermit.Interpeter
                 if (info != null)
                     info.Invoke(real, new[] {Execute(field).Value, value.Value});
                 else
-                    throw new InterpreterException($"{tree.Text} is not asignable");
+                    ThrowHelper.AttributeError($"{tree.Text} is not asignable", StackTrace);
             }
         }
 
@@ -609,7 +633,8 @@ namespace Kermit.Interpeter
             ConstructorInfo info = symbol.Type.GetConstructor(types);
             if (info != null)
                 return TypeHelper.ToKObject(info.Invoke(arguments));
-            throw new InterpreterException("There is no constructor with such argument types");
+            ThrowHelper.TypeError("There is no constructor with such argument types", StackTrace);
+            return null;
         }
 
         // Load native functions dynamically
