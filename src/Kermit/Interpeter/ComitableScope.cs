@@ -28,7 +28,7 @@ namespace Kermit.Interpeter
 
         public override void Define(Symbol sym)
         {
-            _tmpSymbols.Add(sym.Name, sym);
+            _tmpSymbols[sym.Name] = sym;
             sym.Scope = this;
         }
 

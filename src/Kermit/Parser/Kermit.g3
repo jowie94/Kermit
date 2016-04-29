@@ -58,7 +58,14 @@ vardef
 	 {
 		$ID.tree.Scope = currentScope;
 		VariableSymbol vs = new VariableSymbol($ID.text);
-		currentScope.Define(vs);
+		try
+		{
+			currentScope.Define(vs);
+		} catch (System.ArgumentException e)
+		{
+			IToken tok = input.LT(-1);
+			ThrowHelper.AlreadyDefinedArg(SourceName, tok.Line, CreateInputError(tok.Line, tok.CharPositionInLine), $ID.text, e);
+		}
 	 }
 	;
 

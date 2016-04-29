@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Antlr.Runtime;
+using Kermit.Parser.Exceptions;
 
 namespace Kermit.Parser
 {
@@ -26,7 +29,6 @@ namespace Kermit.Parser
 
         public void Define(Symbol sym)
         {
-            // TODO: FIXME Return nicer exception
             GetMembers().Add(sym.Name, sym);
             sym.Scope = this;
         }
