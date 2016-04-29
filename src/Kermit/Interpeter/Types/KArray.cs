@@ -19,7 +19,7 @@ namespace Kermit.Interpeter.Types
             set { Value[el] = value; }
         }
 
-        protected bool Equals(KArray other)
+        private bool Equals(KArray other)
         {
             return Value.Equals(other.Value);
         }
@@ -33,7 +33,7 @@ namespace Kermit.Interpeter.Types
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((KArray) obj);
         }
 

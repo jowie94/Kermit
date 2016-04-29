@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Diagnostics.Contracts;
 
 namespace Kermit.Interpeter.Types
 {
     [Pure]
-    public class TypeHelper
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    public static class TypeHelper
     {
         public static KObject ToKObject(object obj)
         {
@@ -101,7 +101,7 @@ namespace Kermit.Interpeter.Types
             if (obj is KNumber)
                 return ((KNumber) obj).ToInt() != 0;
             if (obj is KChar)
-                return ((KChar) obj).Value != null;
+                return true;
             throw new InvalidCastException($"Can't convert {obj.GetType().Name} to bool");
         }
     }

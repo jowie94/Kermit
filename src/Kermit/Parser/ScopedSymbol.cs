@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Antlr.Runtime;
-using Kermit.Parser.Exceptions;
 
 namespace Kermit.Parser
 {
     public abstract class ScopedSymbol : Symbol, IScope
     {
-        public IScope EnclosingScope { get; private set; }
+        public IScope EnclosingScope { get; }
 
-        public IScope ParentScope
-        {
-            get { return EnclosingScope; }
-        }
+        public IScope ParentScope => EnclosingScope;
 
-        public string ScopeName
-        {
-            get { return Name; }
-        }
+        public string ScopeName => Name;
 
         public Symbol[] SymbolList => EnclosingScope.SymbolList.Concat(GetMembers().Values).ToArray();
 
@@ -38,9 +29,7 @@ namespace Kermit.Parser
             Symbol s;
             if (GetMembers().TryGetValue(name, out s))
                 return s;
-            if (ParentScope != null)
-                return ParentScope.Resolve(name);
-            return null;
+            return ParentScope?.Resolve(name);
         }
 
         public abstract IDictionary<string, Symbol> GetMembers();

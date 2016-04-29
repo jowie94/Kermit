@@ -4,8 +4,8 @@ namespace Kermit.Interpeter.Types
 {
     public class KGlobal : KLocal
     {
-        private MemorySpace _space;
-        private string _innerName;
+        private readonly MemorySpace _space;
+        private readonly string _innerName;
 
         public override KObject Value
         {

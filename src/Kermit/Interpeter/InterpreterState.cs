@@ -9,10 +9,11 @@ namespace Kermit.Interpeter
 {
     public abstract class InterpreterState
     {
-        protected MemorySpace _globals = new MemorySpace("globals");
         private IScope _globalScope;
         private IInterpreterListener _listener;
-        internal Stack<FunctionSpace> _stack = new Stack<FunctionSpace>();
+
+        internal abstract Stack<FunctionSpace> Stack { get; }
+        protected readonly MemorySpace Globals = new MemorySpace("globals");
 
         public IScope GlobalScope
         {
@@ -26,14 +27,14 @@ namespace Kermit.Interpeter
         }
 
         public string[] StackTrace =>
-            _stack.Select(
+            Stack.Select(
                 x => (x.FunctionDefinition is NativeFunctionSymbol ? "(Native) " : "") + x.FunctionDefinition.Name)
                 .Reverse()
                 .ToArray();
 
         public KGlobal GetGlobalVariable(string name)
         {
-            return _globals.Contains(name) ? new KGlobal(name, _globals) : null;
+            return Globals.Contains(name) ? new KGlobal(name, Globals) : null;
         }
 
         public KFunction GetFunction(string name)

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Kermit.Interpeter.Types;
 using Kermit.Parser;
 
 namespace Kermit.Interpeter.InternalFunctions

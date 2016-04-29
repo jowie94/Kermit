@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -48,22 +47,24 @@ namespace Kermit.Interpeter
 #endregion
 
         #region Private fields
-        
-        private KermitParser _parser;
+        private readonly KermitParser _parser;
         private KermitAST _root;
         private MemorySpace _currentSpace;
+        private readonly Stack<FunctionSpace> _stack = new Stack<FunctionSpace>();
+        private readonly ReturnValue _sharedReturnValue = new ReturnValue();
         #endregion
 
         public bool ReplMode = false;
 
+        internal override Stack<FunctionSpace> Stack => _stack;
+
+        // ReSharper disable MemberCanBePrivate.Global
         public Interpreter(IInterpreterListener listener) : this(new GlobalScope(), listener)
         {
             ((GlobalScope) GlobalScope).CommitScope();
         }
 
         public Interpreter(IScope globalScope) : this(globalScope, new DummyListener()) {}
-
-        public readonly ReturnValue SharedReturnValue = new ReturnValue();
 
         public Interpreter(IScope globalScope, IInterpreterListener listener)
         {
@@ -78,7 +79,7 @@ namespace Kermit.Interpeter
             _parser = new KermitParser(null, globalScope) {TreeAdaptor = new KermitAdaptor()};
             //_parser.TraceDestination = Console.Error;
 
-            _currentSpace = _globals;
+            _currentSpace = Globals;
 
             AddInternalNativeFunctions();
             AddNativeType("List", typeof(List<object>));
@@ -139,6 +140,7 @@ namespace Kermit.Interpeter
             ANTLRStringStream stream = new ANTLRStringStream(input, "<stdin>");
             Interpret(stream);
         }
+        // ReSharper restore MemberCanBePrivate.Global
 
         private void Block(KermitAST tree)
         {
@@ -285,8 +287,8 @@ namespace Kermit.Interpeter
 
         private void Return(KermitAST tree)
         {
-            SharedReturnValue.Value = Execute((KermitAST) tree.GetChild(0));
-            throw SharedReturnValue;
+            _sharedReturnValue.Value = Execute((KermitAST) tree.GetChild(0));
+            throw _sharedReturnValue;
         }
 
         public override KObject CallFunction(KFunction function, List<KLocal> parameters)
@@ -311,7 +313,7 @@ namespace Kermit.Interpeter
                     result = cInfo.ReturnValue.Value;
                 }
                 else
-                    Execute(fSymbol.BlockAST);
+                    Execute(fSymbol.BlockAst);
             }
             catch (ReturnValue returnValue)
             {
@@ -504,12 +506,12 @@ namespace Kermit.Interpeter
         private MemorySpace GetSpaceWithSymbol(string id)
         {
             // Check if the current scope contains the id (and it is not the global scope)
-            if (!ReferenceEquals(_currentSpace, _globals) && _currentSpace.Contains(id))
+            if (!ReferenceEquals(_currentSpace, Globals) && _currentSpace.Contains(id))
                 return _currentSpace;
             // Check if the top of the stack contains the id (and it is not the current space)
             if (_stack.Count > 0 && !ReferenceEquals(_stack.Peek(), _currentSpace) && _stack.Peek().Contains(id))
                 return _stack.Peek();
-            return _globals.Contains(id) ? _globals : null;
+            return Globals.Contains(id) ? Globals : null;
         }
 
         private KObject FieldLoad(KermitAST tree)
@@ -618,8 +620,11 @@ namespace Kermit.Interpeter
                 if (t.IsSubclassOf(typeof (NativeFunction)))
                 {
                     ConstructorInfo ctor = t.GetConstructor(new Type[] {});
-                    NativeFunction instance = (NativeFunction) ctor.Invoke(new object[] {});
-                    AddNativeFunction(t.Name, instance);
+                    if (ctor != null)
+                    {
+                        NativeFunction instance = (NativeFunction) ctor.Invoke(new object[] {});
+                        AddNativeFunction(t.Name, instance);
+                    }
                 }
             }
         }

@@ -1,6 +1,4 @@
-﻿using Kermit.Parser;
-
-namespace Kermit.Interpeter
+﻿namespace Kermit.Interpeter
 {
     internal class GlobalScope : ComitableScope
     {

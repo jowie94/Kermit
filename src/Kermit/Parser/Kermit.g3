@@ -46,7 +46,7 @@ functionDefinition
 	 {currentScope = new LocalScope(fs);}
 	 multipleStatements
 	 {
-		fs.BlockAST = $multipleStatements.tree;
+		fs.BlockAst = $multipleStatements.tree;
 		currentScope = currentScope.EnclosingScope;
 		currentScope = currentScope.EnclosingScope;
 	 }

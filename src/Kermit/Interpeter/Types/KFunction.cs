@@ -17,7 +17,7 @@ namespace Kermit.Interpeter.Types
             IsNative = Value is NativeFunctionSymbol;
         }
 
-        protected bool Equals(KFunction other)
+        private bool Equals(KFunction other)
         {
             return Equals(Value, other.Value) && IsNative == other.IsNative;
         }
@@ -26,13 +26,13 @@ namespace Kermit.Interpeter.Types
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((KFunction) obj);
         }
 
         public override int GetHashCode()
         {
-            return (base.GetHashCode() * 397) ^ IsNative.GetHashCode(); ;
+            return (base.GetHashCode() * 397) ^ IsNative.GetHashCode();
         }
 
         protected override object GetValue()

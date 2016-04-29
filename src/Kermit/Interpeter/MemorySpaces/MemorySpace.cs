@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Kermit.Interpeter.Types;
 
 namespace Kermit.Interpeter.MemorySpaces
@@ -11,7 +8,7 @@ namespace Kermit.Interpeter.MemorySpaces
     {
         public string Name { get; }
 
-        IDictionary<string, KLocal> _members = new Dictionary<string, KLocal>();
+        readonly IDictionary<string, KLocal> _members = new Dictionary<string, KLocal>();
         protected IDictionary<string, KLocal> Members => _members;
 
         public MemorySpace(string name)

@@ -5,7 +5,7 @@ namespace Kermit.Interpeter
 {
     class NativeSymbol : Symbol
     {
-        internal Type Type;
+        internal readonly Type Type;
 
         public NativeSymbol(Type type) : this(type.Name, type) {}
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kermit.Interpeter.Types
+﻿namespace Kermit.Interpeter.Types
 {
     class KNativeObject : KObject
     {
@@ -15,7 +9,7 @@ namespace Kermit.Interpeter.Types
             Value = obj;
         }
 
-        protected bool Equals(KNativeObject other)
+        private bool Equals(KNativeObject other)
         {
             return Equals(Value, other.Value);
         }
@@ -24,7 +18,7 @@ namespace Kermit.Interpeter.Types
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((KNativeObject) obj);
         }
 

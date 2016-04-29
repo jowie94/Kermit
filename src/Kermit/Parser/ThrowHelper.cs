@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Configuration;
 using Kermit.Parser.Exceptions;
 
 namespace Kermit.Parser

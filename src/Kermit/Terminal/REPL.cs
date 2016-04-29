@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using Kermit.Interpeter;

@@ -6,12 +6,9 @@ namespace Kermit.Parser
     {
         public IDictionary<string, Symbol> Arguments { get; } = new Dictionary<string, Symbol>();
 
-        public KermitAST BlockAST;
+        public KermitAST BlockAst;
 
-        public new string Name
-        {
-            get { return base.Name + '(' + string.Join(",", Arguments.Keys) + ')'; }
-        }
+        public new string Name => base.Name + '(' + string.Join(",", Arguments.Keys) + ')';
 
         public FunctionSymbol(string name, IScope parentScope) : base(name, parentScope) {}
 

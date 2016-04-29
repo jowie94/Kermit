@@ -6,11 +6,11 @@ namespace Kermit.Parser
     public abstract class BaseScope : IScope
     {
         public string ScopeName { get; protected set; }
-        public IScope EnclosingScope { get; private set; }
+        public IScope EnclosingScope { get; }
 
         public virtual Symbol[] SymbolList => _symbols.Values.ToArray();
 
-        IDictionary<string, Symbol> _symbols = new Dictionary<string, Symbol>();
+        readonly IDictionary<string, Symbol> _symbols = new Dictionary<string, Symbol>();
         
 
         protected BaseScope(IScope parent)
@@ -28,7 +28,7 @@ namespace Kermit.Parser
         {
             Symbol s;
             if (_symbols.TryGetValue(name, out s)) return s;
-            return ParentScope != null ? ParentScope.Resolve(name) : null;
+            return ParentScope?.Resolve(name);
         }
 
         public IScope ParentScope => EnclosingScope;
@@ -37,7 +37,7 @@ namespace Kermit.Parser
         {
             string s = "";
             if (EnclosingScope != null)
-                s = EnclosingScope.ToString() + "\n";
+                s = EnclosingScope + "\n";
             return s + ScopeName + " " + string.Join(";", _symbols.Select(x => x.Key + "=" + x.Value.ToString()));
         }
     }

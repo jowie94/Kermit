@@ -5,7 +5,7 @@
         /// <summary>
         /// Symbol's name
         /// </summary>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <summary>
         /// Symbol's containing scope
