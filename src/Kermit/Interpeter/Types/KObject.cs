@@ -57,32 +57,45 @@ namespace Kermit.Interpeter.Types
         public KObject GetInnerField(string name)
         {
             object obj = Value;
-            PropertyInfo pinfo = obj.GetType()
-                .GetProperty(name,
-                    BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
-            if (pinfo == null)
-                return null;
-            // TODO: check fields
-            return TypeHelper.ToKObject(pinfo.GetValue(obj));
+            Type oType = obj.GetType();
+            BindingFlags flags = BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Static |
+                                 BindingFlags.Public;
+            PropertyInfo pinfo = oType.GetProperty(name, flags);
+            KObject res = null;
+            if (pinfo != null)
+                res = TypeHelper.ToKObject(pinfo.GetValue(obj));
+            else
+            {
+                FieldInfo finfo = oType.GetField(name, flags);
+                if (finfo != null)
+                    res = TypeHelper.ToKObject(finfo.GetValue(obj));
+            }
+            return res;
         }
 
         public bool SetInnerField(string name, KObject value)
         {
             object obj = Value;
-            PropertyInfo pinfo = obj.GetType()
-                .GetProperty(name,
-                    BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
-            if (pinfo == null)
-                return false;
-            // TODO: check fields
-            pinfo.SetValue(obj, value.Value);
+            Type oType = obj.GetType();
+            BindingFlags flags = BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.Static |
+                                 BindingFlags.Public;
+            PropertyInfo pinfo = oType.GetProperty(name, flags);
+            if (pinfo != null)
+                pinfo.SetValue(obj, value.Value);
+            else
+            {
+                FieldInfo finfo = oType.GetField(name, flags);
+                if (finfo != null)
+                    finfo.SetValue(name, flags);
+                else return false;
+            }
             return true;
         }
 
         public KObject CallInnerFunction(string name, object[] parameters)
         {
             object obj = Value;
-            Type[] types = parameters.Select(x => x.GetType()).ToArray(); // TODO: Border case, array parameter
+            Type[] types = parameters.Select(x => x.GetType()).ToArray(); // TODO: Border case, array parameter (delayed)
             MethodInfo info = obj.GetType().GetMethod(name, types);
             if (info == null)
                 return null;
