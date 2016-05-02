@@ -319,7 +319,7 @@ namespace Kermit.Interpeter
             KermitAST exec = (KermitAST) tree.GetChild(0);
             KObject obj = Execute(exec);
             if (ReplMode && obj != null && !(obj is KVoid))
-                Listener.Write(obj.Value.ToString());
+                Listener.Write(obj.ToString());
         }
 
         /// <summary>

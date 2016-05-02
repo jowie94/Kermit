@@ -29,7 +29,7 @@ namespace Kermit.Interpeter.Types
 
         public override string ToString()
         {
-            return string.Join(", ", Value.Select(x => x.Value.ToString()));
+            return '[' + string.Join(", ", Value.Select(x => x.Value.ToString())) + ']';
         }
 
         public override bool Equals(object obj)
