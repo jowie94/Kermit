@@ -401,7 +401,7 @@ namespace Kermit.Interpeter
 
         private KObject CreateArray(KermitAST tree)
         {
-            KObject[] args = tree.Children.Select(x => Execute((KermitAST) x)).ToArray();
+            KObject[] args = tree.Children?.Select(x => Execute((KermitAST) x)).ToArray() ?? new KObject[0];
             return new KArray(args);
         }
 
