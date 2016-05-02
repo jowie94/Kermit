@@ -3,6 +3,9 @@ using Kermit.Interpeter.Types;
 
 namespace Kermit.Interpeter.InternalFunctions
 {
+    /// <summary>
+    /// Reads a line
+    /// </summary>
     class ReadLine : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)

@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Encapsulates a global variable and updates the value in the memory space when set
+    /// </summary>
     public class KGlobal : KLocal
     {
         private readonly MemorySpace _space;

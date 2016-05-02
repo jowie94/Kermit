@@ -3,6 +3,9 @@ using Kermit.Interpeter.Types;
 
 namespace Kermit.Interpeter.InternalFunctions
 {
+    /// <summary>
+    /// Gets the type of an object
+    /// </summary>
     class TypeOf : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)

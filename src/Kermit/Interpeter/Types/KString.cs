@@ -3,6 +3,9 @@ using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing a string
+    /// </summary>
     public class KString : KObject, IComparable
     {
         public new string Value;

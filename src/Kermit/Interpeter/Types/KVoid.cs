@@ -1,5 +1,8 @@
 ﻿namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing a void
+    /// </summary>
     public class KVoid : KObject
     {
         public new object Value => null;

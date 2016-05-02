@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing a float
+    /// </summary>
     public class KFloat : KNumber
     {
         public new float Value;

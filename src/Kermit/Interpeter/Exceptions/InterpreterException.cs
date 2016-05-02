@@ -1,11 +1,16 @@
 ﻿using System;
-using System.Linq;
 
 namespace Kermit.Interpeter.Exceptions
 {
+    /// <summary>
+    /// Simbolizes an internal exception of the interpreter
+    /// </summary>
     [Serializable]
     public class InterpreterException : Exception
     {
+        /// <summary>
+        /// The Stack of function calls
+        /// </summary>
         public string[] CallStack { get; internal set; }
 
         public InterpreterException(string message, string[] stack = null) : base(message)
@@ -19,6 +24,10 @@ namespace Kermit.Interpeter.Exceptions
             CallStack = stack;
         }
 
+        /// <summary>
+        /// Format the call stack as an string separated by \n
+        /// </summary>
+        /// <returns></returns>
         public string GetCallStack()
         {
             string res = "";

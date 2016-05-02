@@ -3,6 +3,9 @@ using Kermit.Interpeter.Types;
 
 namespace Kermit.Interpeter.MemorySpaces
 {
+    /// <summary>
+    /// Scoped memory space including a parent
+    /// </summary>
     class ScopeSpace : MemorySpace
     {
         private readonly MemorySpace _parentSpace;

@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter.InternalFunctions
 {
+    /// <summary>
+    /// Writes in the console
+    /// </summary>
     internal class Write : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)

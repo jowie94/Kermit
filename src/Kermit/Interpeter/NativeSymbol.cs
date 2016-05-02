@@ -3,6 +3,9 @@ using Kermit.Parser;
 
 namespace Kermit.Interpeter
 {
+    /// <summary>
+    /// Symbol for native objects
+    /// </summary>
     class NativeSymbol : Symbol
     {
         internal readonly Type Type;

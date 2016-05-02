@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing an array
+    /// </summary>
     public class KArray : KObject
     {
         public new List<KObject> Value = new List<KObject>();

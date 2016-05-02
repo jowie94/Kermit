@@ -4,6 +4,9 @@ using Kermit.Parser;
 
 namespace Kermit.Interpeter
 {
+    /// <summary>
+    /// Represents a comitable scope that can be commited or reverted
+    /// </summary>
     internal abstract class ComitableScope : BaseScope
     {
         private readonly IDictionary<string, Symbol> _tmpSymbols = new Dictionary<string, Symbol>();

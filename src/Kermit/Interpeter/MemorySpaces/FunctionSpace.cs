@@ -5,6 +5,9 @@ using Kermit.Parser;
 
 namespace Kermit.Interpeter.MemorySpaces
 {
+    /// <summary>
+    /// Memory space for functions
+    /// </summary>
     class FunctionSpace : MemorySpace
     {
         public readonly FunctionSymbol FunctionDefinition; // Function being executed

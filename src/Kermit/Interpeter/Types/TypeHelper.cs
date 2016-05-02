@@ -7,10 +7,18 @@ using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Class with helper functions for internal types
+    /// </summary>
     [Pure]
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     public static class TypeHelper
     {
+        /// <summary>
+        /// Convert an object to a internal object
+        /// </summary>
+        /// <param name="obj">The object to be converted</param>
+        /// <returns>A new internal object encapsulating the real object</returns>
         public static KObject ToKObject(object obj)
         {
             if (obj is string)
@@ -26,6 +34,12 @@ namespace Kermit.Interpeter.Types
             return new KNativeObject(obj);
         }
 
+        /// <summary>
+        /// Cast an internal object to another
+        /// </summary>
+        /// <typeparam name="T">The type to be casted</typeparam>
+        /// <param name="obj">The object to be casted</param>
+        /// <returns>The object casted, an argument exception if the object is null or an interpreter exception if it is not casteable</returns>
         public static T Cast<T>(KObject obj) where T : KObject
         {
             if (obj == null)
@@ -36,21 +50,42 @@ namespace Kermit.Interpeter.Types
             return null;
         }
 
+        /// <summary>
+        /// Converts an array of parameters to a list of parameters
+        /// </summary>
+        /// <param name="parameters">The parameters to be converted</param>
+        /// <returns>The list of parameters converted</returns>
         public static List<KLocal> ToParameterList(params object[] parameters)
         {
             return ToParameterList(parameters.ToList());
         }
 
+        /// <summary>
+        /// Converts an IEnumerable of parameters to a list of parameters
+        /// </summary>
+        /// <param name="parameters">The parameters to be converted</param>
+        /// <returns>The list of parameters converted</returns>
         public static List<KLocal> ToParameterList(IEnumerable<object> parameters)
         {
             return parameters.Select(x => new KLocal(ToKObject(x))).ToList();
         }
 
+        /// <summary>
+        /// Checks if the object or the inner object is of type <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T">The type to be checked</typeparam>
+        /// <param name="obj">The object to be checked</param>
+        /// <returns>true or false if the object is of type <typeparamref name="T"/></returns>
         public static bool Is<T>(KObject obj)
         {
             return obj is T || obj.Value is T;
         }
 
+        /// <summary>
+        /// Converts an object to a string
+        /// </summary>
+        /// <param name="obj">The object to convert to string</param>
+        /// <returns>The object converted to string</returns>
         public static KString ToString(KObject obj)
         {
             if (obj == null)
@@ -58,6 +93,13 @@ namespace Kermit.Interpeter.Types
             return new KString(obj.ToString());
         }
 
+        /// <summary>
+        /// Converts an object to integer
+        /// </summary>
+        /// <param name="obj">The object to be converted</param>
+        /// <returns>The object converted</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="obj"/> is null</exception>
+        /// <exception cref="InterpreterException">If <paramref name="obj"/> can't be converted to int</exception>
         public static KInt ToInt(KObject obj)
         {
             if (obj == null)
@@ -76,6 +118,13 @@ namespace Kermit.Interpeter.Types
             return null;
         }
 
+        /// <summary>
+        /// Converts an object to float
+        /// </summary>
+        /// <param name="obj">The object to be converted</param>
+        /// <returns>The object converted</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="obj"/> is null</exception>
+        /// <exception cref="InterpreterException">If <paramref name="obj"/> can't be converted to float</exception>
         public static KFloat ToFloat(KObject obj)
         {
             if (obj == null)
@@ -94,6 +143,13 @@ namespace Kermit.Interpeter.Types
             return null;
         }
 
+        /// <summary>
+        /// Converts an object to boolean
+        /// </summary>
+        /// <param name="obj">The object to be converted</param>
+        /// <returns>The object converted</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="obj"/> is null</exception>
+        /// <exception cref="InterpreterException">If <paramref name="obj"/> can't be converted to boolean</exception>
         public static KBool ToBool(KObject obj)
         {
             if (obj == null)

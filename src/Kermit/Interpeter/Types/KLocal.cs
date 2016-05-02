@@ -1,5 +1,8 @@
 ﻿namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Encapsulates a local variable
+    /// </summary>
     public class KLocal
     {
         private KObject _value;

@@ -3,10 +3,21 @@ using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Super-type of numbers
+    /// </summary>
     public abstract class KNumber : KObject, IComparable
     {
+        /// <summary>
+        /// Converts the number to an integer
+        /// </summary>
+        /// <returns>The integer represetation</returns>
         public abstract int ToInt();
 
+        /// <summary>
+        /// Converts the number to a float
+        /// </summary>
+        /// <returns>The float representation</returns>
         public abstract float ToFloat();
 
         public static KNumber operator +(KNumber x, KNumber y)

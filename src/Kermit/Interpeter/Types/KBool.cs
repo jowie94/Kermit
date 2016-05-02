@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing a boolean
+    /// </summary>
     public class KBool : KObject
     {
         public new bool Value;

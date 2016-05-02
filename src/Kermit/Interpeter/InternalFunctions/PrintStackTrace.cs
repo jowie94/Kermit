@@ -1,5 +1,8 @@
 ﻿namespace Kermit.Interpeter.InternalFunctions
 {
+    /// <summary>
+    /// Prints the call stack
+    /// </summary>
     class PrintStackTrace : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)

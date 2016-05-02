@@ -14,10 +14,16 @@ using KermitParser = Kermit.Parser.KermitParser;
 
 namespace Kermit.Interpeter
 {
+    /// <summary>
+    /// Main interpreter logic class
+    /// </summary>
     public class Interpreter : InterpreterState
     {
 
         #region Internal classes
+        /// <summary>
+        /// Dummy listener used when no Listener is passed
+        /// </summary>
         private class DummyListener : IInterpreterListener
         {
             public void Write(string msg) {}
@@ -30,6 +36,9 @@ namespace Kermit.Interpeter
             public string ReadLine() => string.Empty;
         }
 
+        /// <summary>
+        /// Custom TreeAdaptor for the parser
+        /// </summary>
         class KermitAdaptor : CommonTreeAdaptor
         {
             public override object Create(IToken payload)
@@ -57,8 +66,14 @@ namespace Kermit.Interpeter
         private readonly ReturnValue _sharedReturnValue = new ReturnValue();
         #endregion
 
+        /// <summary>
+        /// Activates/Desactivates REPL mode in the interpreter
+        /// </summary>
         public bool ReplMode = false;
 
+        /// <summary>
+        /// Call stack of the interpreter
+        /// </summary>
         internal override Stack<FunctionSpace> Stack => _stack;
 
         // ReSharper disable MemberCanBePrivate.Global
@@ -90,6 +105,11 @@ namespace Kermit.Interpeter
             AddNativeType("Dictionary", typeof(Dictionary<object, object>));
         }
 
+        /// <summary>
+        /// Add a native function to the interpreter
+        /// </summary>
+        /// <param name="name">Name of the function</param>
+        /// <param name="function">Function object to be called</param>
         public void AddNativeFunction(string name, NativeFunction function)
         {
             function.Name = name;
@@ -97,16 +117,29 @@ namespace Kermit.Interpeter
             GlobalScope.Define(symbol);
         }
 
+        /// <summary>
+        /// Add a native type to the interpreter
+        /// </summary>
+        /// <param name="type">Type to be added</param>
         public void AddNativeType(Type type)
         {
             GlobalScope.Define(new NativeSymbol(type));
         }
 
+        /// <summary>
+        /// Add a native type to the interpreter
+        /// </summary>
+        /// <param name="name">Name for the type</param>
+        /// <param name="type">Type to be added</param>
         public void AddNativeType(string name, Type type)
         {
             GlobalScope.Define(new NativeSymbol(name, type));
         }
 
+        /// <summary>
+        /// Execute the input stream
+        /// </summary>
+        /// <param name="input">Input stream to be executed</param>
         public void Interpret(ANTLRStringStream input)
         {
             KermitLexer lexer = new KermitLexer(input);
@@ -152,6 +185,10 @@ namespace Kermit.Interpeter
             }
         }
 
+        /// <summary>
+        /// Execute the input string
+        /// </summary>
+        /// <param name="input">Input string with commands to be executed</param>
         public void Interpret(string input)
         {
             ANTLRStringStream stream = new ANTLRStringStream(input, "<stdin>");
@@ -159,6 +196,10 @@ namespace Kermit.Interpeter
         }
         // ReSharper restore MemberCanBePrivate.Global
 
+        /// <summary>
+        /// Execute a block node
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void Block(KermitAST tree)
         {
             if (tree.Type != KermitParser.BLOCK)
@@ -170,6 +211,13 @@ namespace Kermit.Interpeter
             children?.ToList().ForEach(x => Execute((KermitAST) x));
         }
 
+        /// <summary>
+        /// Main interpreter method.
+        /// This method distributes all node types to the corresponding functions to be executed
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>An object or null, the result of the execution</returns>
+        /// <exception cref="InterpreterException">If an internal error occurs</exception>
         private KObject Execute(KermitAST tree)
         {
             try
@@ -262,6 +310,10 @@ namespace Kermit.Interpeter
             return null;
         }
 
+        /// <summary>
+        /// Print the result of the node execution to the console if in REPL mode
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void ReplPrint(KermitAST tree)
         {
             KermitAST exec = (KermitAST) tree.GetChild(0);
@@ -270,6 +322,10 @@ namespace Kermit.Interpeter
                 Listener.Write(obj.Value.ToString());
         }
 
+        /// <summary>
+        /// Performs a while loop
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void WhileLoop(KermitAST tree)
         {
             KermitAST condition = (KermitAST) tree.GetChild(0);
@@ -287,6 +343,10 @@ namespace Kermit.Interpeter
             _currentSpace = save;
         }
 
+        /// <summary>
+        /// Performs a for loop
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void ForLoop(KermitAST tree)
         {
             KermitAST begin = (KermitAST) tree.GetChild(0);
@@ -302,12 +362,22 @@ namespace Kermit.Interpeter
             _currentSpace = save;
         }
 
+        /// <summary>
+        /// Interrupts the current block execution and sets the return value
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void Return(KermitAST tree)
         {
             _sharedReturnValue.Value = Execute((KermitAST) tree.GetChild(0));
             throw _sharedReturnValue;
         }
 
+        /// <summary>
+        /// Execute a function inside the interpreter
+        /// </summary>
+        /// <param name="function">Function to be executed</param>
+        /// <param name="parameters">Parameters to be passed to a function</param>
+        /// <returns>The result of the function</returns>
         public override KObject CallFunction(KFunction function, List<KLocal> parameters)
         {
             FunctionSymbol fSymbol = function.Value;
@@ -341,6 +411,11 @@ namespace Kermit.Interpeter
             return result;
         }
 
+        /// <summary>
+        /// Call a function
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the function</returns>
         private KObject Call(KermitAST tree)
         {
             string fName = tree.GetChild(0).Text;
@@ -385,6 +460,11 @@ namespace Kermit.Interpeter
             return CallFunction(function, param);
         }
 
+        /// <summary>
+        /// Instance an object
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The instantiated object</returns>
         private KObject Instance(KermitAST tree)
         {
             KermitAST objName = (KermitAST) tree.GetChild(0);
@@ -399,18 +479,32 @@ namespace Kermit.Interpeter
             return null;
         }
 
+        /// <summary>
+        /// Creates an array
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The created array</returns>
         private KObject CreateArray(KermitAST tree)
         {
             KObject[] args = tree.Children?.Select(x => Execute((KermitAST) x)).ToArray() ?? new KObject[0];
             return new KArray(args);
         }
 
+        /// <summary>
+        /// Negates an expression
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The negated expression</returns>
         private KBool Not(KermitAST tree)
         {
             KObject inner = Execute((KermitAST) tree.GetChild(0));
             return !inner;
         }
 
+        /// <summary>
+        /// Executes an if statement
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void IfStatement(KermitAST tree)
         {
             KermitAST condition = (KermitAST) tree.GetChild(0);
@@ -424,6 +518,10 @@ namespace Kermit.Interpeter
                 Execute(elseCode);
         }
 
+        /// <summary>
+        /// Assign a value to a variable
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
         private void Assign(KermitAST tree)
         {
             KermitAST lhs = (KermitAST) tree.GetChild(0);
@@ -448,6 +546,11 @@ namespace Kermit.Interpeter
             }
         }
 
+        /// <summary>
+        /// Loads a variable from memory
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The loaded variable</returns>
         private KObject Load(KermitAST tree)
         {
             if (tree.Type == KermitParser.DOT)
@@ -463,6 +566,11 @@ namespace Kermit.Interpeter
             return null;
         }
 
+        /// <summary>
+        /// Executes an equality instruction between two values
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the equality</returns>
         private KBool Eq(KermitAST tree)
         {
             KObject a = Execute((KermitAST) tree.GetChild(0));
@@ -471,16 +579,31 @@ namespace Kermit.Interpeter
             return a == b;
         }
 
+        /// <summary>
+        /// Executes a LT instruction between two values
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the comparison</returns>
         private KBool Lt(KermitAST tree)
         {
             return Compare(tree) < 0;
         }
 
+        /// <summary>
+        /// Executes a BT instruction between two values
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the comparison</returns>
         private KBool Bt(KermitAST tree)
         {
             return Compare(tree) > 0;
         }
 
+        /// <summary>
+        /// Compares two values if they are IComparable
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the comparison</returns>
         private int Compare(KermitAST tree)
         {
             KObject a = Execute((KermitAST)tree.GetChild(0));
@@ -495,6 +618,13 @@ namespace Kermit.Interpeter
             return -1;
         }
 
+        /// <summary>
+        /// Adds two values.
+        /// - If both are numbers, executes the arithmetic operation
+        /// - If one of them is a string, then the two string representations are concatenated
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the execution</returns>
         private KObject Add(KermitAST tree)
         {
             KObject a = Execute((KermitAST)tree.GetChild(0));
@@ -505,6 +635,11 @@ namespace Kermit.Interpeter
             return Arithmetic(tree);
         }
 
+        /// <summary>
+        /// Performs an arithmetic operation over two values
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the execution</returns>
         private KObject Arithmetic(KermitAST tree)
         {
             KNumber a = Execute((KermitAST) tree.GetChild(0)).Cast<KNumber>();
@@ -527,6 +662,11 @@ namespace Kermit.Interpeter
         }
 
         #region Convenience methods
+        /// <summary>
+        /// Get the <see cref="MemorySpace"/> containing the named variable
+        /// </summary>
+        /// <param name="id">The variable to look for</param>
+        /// <returns>The <see cref="MemorySpace"/> containing <paramref name="id"/> or null</returns>
         private MemorySpace GetSpaceWithSymbol(string id)
         {
             // Check if the current scope contains the id (and it is not the global scope)
@@ -538,6 +678,11 @@ namespace Kermit.Interpeter
             return Globals.Contains(id) ? Globals : null;
         }
 
+        /// <summary>
+        /// Load a field of an object
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <returns>The result of the field</returns>
         private KObject FieldLoad(KermitAST tree)
         {
             KermitAST leftExpr = (KermitAST) tree.GetChild(0);
@@ -580,6 +725,12 @@ namespace Kermit.Interpeter
             return val;
         }
 
+        /// <summary>
+        /// Load an item from an enumerable object
+        /// </summary>
+        /// <param name="enumerable">An enumerable object</param>
+        /// <param name="member">The member to search</param>
+        /// <returns>The loaded item</returns>
         private KObject LoadItem(KObject enumerable, KObject member)
         {
             if (enumerable is KArray)
@@ -594,6 +745,11 @@ namespace Kermit.Interpeter
             return null;
         }
 
+        /// <summary>
+        /// Load an item from an enumerable object
+        /// </summary>
+        /// <param name="tree">The tree to be executed</param>
+        /// <returns>The loaded object</returns>
         private KObject LoadItem(KermitAST tree)
         {
             KermitAST expr = (KermitAST)tree.GetChild(0);
@@ -604,6 +760,11 @@ namespace Kermit.Interpeter
             return res;
         }
 
+        /// <summary>
+        /// Assign a value to a field
+        /// </summary>
+        /// <param name="tree">Tree to be executed</param>
+        /// <param name="value">Value to be set</param>
         private void FieldAssign(KermitAST tree, KObject value)
         {
             KermitAST leftExpr = (KermitAST)tree.GetChild(0);
@@ -627,6 +788,12 @@ namespace Kermit.Interpeter
             }
         }
 
+        /// <summary>
+        /// Instantiate a native object
+        /// </summary>
+        /// <param name="symbol">Symbol object to be instantiated</param>
+        /// <param name="arguments">Arguments to be passed to the constructor</param>
+        /// <returns>The instantiated object</returns>
         private KObject InstantiateObject(NativeSymbol symbol, object[] arguments)
         {
             Type[] types = arguments.Select(x => x.GetType()).ToArray();
@@ -637,7 +804,9 @@ namespace Kermit.Interpeter
             return null;
         }
 
-        // Load native functions dynamically
+        /// <summary>
+        /// Loads native functions inside the assembly dynamially
+        /// </summary>
         private void AddInternalNativeFunctions()
         {
             foreach (Type t in GetType().Assembly.GetTypes())

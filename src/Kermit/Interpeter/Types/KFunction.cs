@@ -3,6 +3,9 @@ using Kermit.Parser;
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing a function
+    /// </summary>
     public class KFunction : KObject
     {
         internal new readonly FunctionSymbol Value;

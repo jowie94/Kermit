@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter
 {
+    /// <summary>
+    /// Symbol for native functions
+    /// </summary>
     internal class NativeFunctionSymbol : FunctionSymbol
     {
         public readonly NativeFunction NativeFunction;

@@ -4,30 +4,64 @@ using System.Reflection;
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Basic object. All objects must inherit this type
+    /// </summary>
     public abstract class KObject
     {
+        /// <summary>
+        /// The value real of the object
+        /// </summary>
         public virtual object Value
         {
             get { return GetValue(); }
             set { SetValue(value); }
         }
 
+        /// <summary>
+        /// If the object is void
+        /// </summary>
         public bool IsVoid => Is<KVoid>();
 
+        /// <summary>
+        /// If the object is a number
+        /// </summary>
         public bool IsNumber => Is<KNumber>();
 
+        /// <summary>
+        /// If the object is an integer
+        /// </summary>
         public bool IsInt => Is<KInt>();
 
+        /// <summary>
+        /// If the object is a float
+        /// </summary>
         public bool IsFloat => Is<KFloat>();
 
+        /// <summary>
+        /// If the object is a char
+        /// </summary>
         public bool IsChar => Is<KChar>();
 
+        /// <summary>
+        /// If the object is a string
+        /// </summary>
         public bool IsString => Is<KString>();
 
-        //public bool IsExternal => TypeHelper.Is<KExternal>(this);
+        public bool IsNative => Is<KNativeObject>();
 
+        /// <summary>
+        /// Generic Type checker
+        /// </summary>
+        /// <typeparam name="T">The type to check</typeparam>
+        /// <returns>If the object is of thar type</returns>
         public bool Is<T>() => TypeHelper.Is<T>(this);
 
+        /// <summary>
+        /// Cast the object to another type
+        /// </summary>
+        /// <typeparam name="T">The type to cast</typeparam>
+        /// <returns>The object casted</returns>
         public T Cast<T>() where T : KObject => TypeHelper.Cast<T>(this);
 
         public static bool operator ==(KObject obj1, KObject obj2)
@@ -54,6 +88,11 @@ namespace Kermit.Interpeter.Types
             return element.Not();
         }
 
+        /// <summary>
+        /// Gets the value of an inner field
+        /// </summary>
+        /// <param name="name">The name to search</param>
+        /// <returns>The value of the field or null if not found</returns>
         public KObject GetInnerField(string name)
         {
             object obj = Value;
@@ -73,6 +112,12 @@ namespace Kermit.Interpeter.Types
             return res;
         }
 
+        /// <summary>
+        /// Sets the value of an inner field
+        /// </summary>
+        /// <param name="name">The field to be set</param>
+        /// <param name="value">The new value</param>
+        /// <returns>true or false depending if the field was found</returns>
         public bool SetInnerField(string name, KObject value)
         {
             object obj = Value;
@@ -92,6 +137,12 @@ namespace Kermit.Interpeter.Types
             return true;
         }
 
+        /// <summary>
+        /// Calls an inner function
+        /// </summary>
+        /// <param name="name">The function to call</param>
+        /// <param name="parameters">The parameters to be passed</param>
+        /// <returns>The value returned by the function</returns>
         public KObject CallInnerFunction(string name, object[] parameters)
         {
             object obj = Value;
@@ -105,10 +156,22 @@ namespace Kermit.Interpeter.Types
             return TypeHelper.ToKObject(ret);
         }
 
+        /// <summary>
+        /// Get the real value of the super-type
+        /// </summary>
+        /// <returns>The super-type value</returns>
         protected abstract object GetValue();
 
+        /// <summary>
+        /// Sets the value of the super-type
+        /// </summary>
+        /// <param name="obj">The new value</param>
         protected abstract void SetValue(object obj);
 
+        /// <summary>
+        /// Returns the not of the super-type
+        /// </summary>
+        /// <returns>The not of the super-type</returns>
         protected abstract bool Not();
     }
 }

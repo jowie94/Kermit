@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing an integer
+    /// </summary>
     public class KInt : KNumber
     {
         public new int Value;

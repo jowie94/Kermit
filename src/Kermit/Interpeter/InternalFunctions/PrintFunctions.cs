@@ -3,6 +3,9 @@ using Kermit.Parser;
 
 namespace Kermit.Interpeter.InternalFunctions
 {
+    /// <summary>
+    /// Prints the available functions 
+    /// </summary>
     class PrintFunctions : NativeFunction
     {
         public override void Execute(FunctionCallbackInfo info)

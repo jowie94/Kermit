@@ -2,6 +2,9 @@
 
 namespace Kermit.Interpeter.Types
 {
+    /// <summary>
+    /// Type representing a type
+    /// </summary>
     class KType : KObject
     {
         public new Type Value;
