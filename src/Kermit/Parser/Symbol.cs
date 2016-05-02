@@ -1,5 +1,8 @@
 ﻿namespace Kermit.Parser
 {
+    /// <summary>
+    /// Symbol representation
+    /// </summary>
     public class Symbol
     {
         /// <summary>
