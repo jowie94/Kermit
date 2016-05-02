@@ -49,7 +49,14 @@ while (i < 10)
 }
 ```
 ### Do.. while loop
-### For Loop
+```javascript
+i = 0
+do {
+	Write(i+2)
+	i += 1
+} while (i < 9)
+```
+### For loop
 ```javascript
 for (i = 0; i < 10; i += 1)
 {
