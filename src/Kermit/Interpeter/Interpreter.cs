@@ -203,9 +203,7 @@ namespace Kermit.Interpeter
         private void Block(KermitAST tree)
         {
             if (tree.Type != KermitParser.BLOCK)
-            {
-                Listener.Error("Not a block!: " + tree.ToStringTree());
-            }
+                ThrowHelper.InterpreterException("Not a block!: " + tree.ToStringTree());
 
             IList<ITree> children = tree.Children;
             children?.ToList().ForEach(x => Execute((KermitAST) x));
