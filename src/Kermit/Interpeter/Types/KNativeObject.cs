@@ -3,7 +3,7 @@
     /// <summary>
     /// Type representing a native object
     /// </summary>
-    class KNativeObject : KObject
+    public class KNativeObject : KObject
     {
         public new object Value;
 
