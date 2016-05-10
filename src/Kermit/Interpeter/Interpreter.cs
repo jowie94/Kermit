@@ -695,6 +695,10 @@ namespace Kermit.Interpeter
             if (field.Type == KermitParser.CALL)
             {
                 name = field.GetChild(0).Text;
+                FunctionSpace fSpace = new FunctionSpace(new FunctionSymbol(leftExpr.Text + "." + name, GlobalScope));
+                MemorySpace savedSpace = _currentSpace;
+                _currentSpace = fSpace;
+                _stack.Push(fSpace);
                 object[] args = new object[field.ChildCount - 1];
                 for (int i = 0; i < args.Length; ++i)
                 {
@@ -702,6 +706,8 @@ namespace Kermit.Interpeter
                     args[i] = obj is KNativeObject ? ko.Value : ko;
                 }
                 val = obj.CallInnerFunction(name, args);
+                _stack.Pop();
+                _currentSpace = savedSpace;
             }
             else
             {
