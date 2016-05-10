@@ -93,7 +93,7 @@ namespace Kermit.Interpeter.Types
         /// </summary>
         /// <param name="name">The name to search</param>
         /// <returns>The value of the field or null if not found</returns>
-        public KObject GetInnerField(string name)
+        public virtual KObject GetInnerField(string name)
         {
             object obj = Value;
             Type oType = obj.GetType();
@@ -118,7 +118,7 @@ namespace Kermit.Interpeter.Types
         /// <param name="name">The field to be set</param>
         /// <param name="value">The new value</param>
         /// <returns>true or false depending if the field was found</returns>
-        public bool SetInnerField(string name, KObject value)
+        public virtual bool SetInnerField(string name, KObject value)
         {
             object obj = Value;
             Type oType = obj.GetType();
@@ -143,7 +143,7 @@ namespace Kermit.Interpeter.Types
         /// <param name="name">The function to call</param>
         /// <param name="parameters">The parameters to be passed</param>
         /// <returns>The value returned by the function</returns>
-        public KObject CallInnerFunction(string name, object[] parameters)
+        public virtual KObject CallInnerFunction(string name, object[] parameters)
         {
             object obj = Value;
             Type[] types = parameters.Select(x => x.GetType()).ToArray(); // TODO: Border case, array parameter (delayed)

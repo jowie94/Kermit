@@ -21,6 +21,8 @@ namespace Kermit.Interpeter.Types
         /// <returns>A new internal object encapsulating the real object</returns>
         public static KObject ToKObject(object obj)
         {
+            if (obj is KObject)
+                return (KObject) obj;
             if (obj is string)
                 return new KString((string) obj);
             if (obj is int)
