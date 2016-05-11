@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Diagnostics.Contracts;
+using Antlr.Runtime.Tree;
 using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
@@ -81,6 +82,16 @@ namespace Kermit.Interpeter.Types
         public static bool Is<T>(KObject obj)
         {
             return obj is T || obj.Value is T;
+        }
+
+        public static KArray CreateArray(params object[] elements)
+        {
+            return CreateArray(elements.ToList());
+        }
+
+        public static KArray CreateArray(IEnumerable<object> elements)
+        {
+            return new KArray(elements.Select(ToKObject).ToArray());
         }
 
         /// <summary>
