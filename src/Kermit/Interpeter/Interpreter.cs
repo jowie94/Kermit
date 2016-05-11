@@ -115,6 +115,8 @@ namespace Kermit.Interpeter
             function.Name = name;
             NativeFunctionSymbol symbol = new NativeFunctionSymbol(name, GlobalScope, function);
             GlobalScope.Define(symbol);
+            ComitableScope g = GlobalScope as ComitableScope;
+            g?.CommitScope();
         }
 
         /// <summary>
@@ -123,7 +125,7 @@ namespace Kermit.Interpeter
         /// <param name="type">Type to be added</param>
         public void AddNativeType(Type type)
         {
-            GlobalScope.Define(new NativeSymbol(type));
+            AddNativeType(type.Name, type);
         }
 
         /// <summary>
@@ -134,6 +136,8 @@ namespace Kermit.Interpeter
         public void AddNativeType(string name, Type type)
         {
             GlobalScope.Define(new NativeSymbol(name, type));
+            ComitableScope g = GlobalScope as ComitableScope;
+            g?.CommitScope();
         }
 
         /// <summary>
@@ -150,6 +154,8 @@ namespace Kermit.Interpeter
             try
             {
                 ret = _parser.program();
+                ComitableScope g = GlobalScope as ComitableScope;
+                g?.CommitScope();
             }
             catch (Exception e) when (e is ParserException || e is PartialStatement)
             {
@@ -165,6 +171,8 @@ namespace Kermit.Interpeter
                 try
                 {
                     Block(_root);
+                    ComitableScope g = GlobalScope as ComitableScope;
+                    g?.CommitScope();
                 }
                 catch (InterpreterException e)
                 {
