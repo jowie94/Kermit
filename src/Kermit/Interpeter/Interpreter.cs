@@ -790,13 +790,19 @@ namespace Kermit.Interpeter
             }
             else if (tree.Type == KermitParser.INDEX)
             {
-                object real = obj.Value;
-                Type objType = real.GetType();
-                MethodInfo info = objType.GetMethod("set_Item");
-                if (info != null)
-                    info.Invoke(real, new[] {Execute(field).Value, value.Value});
+                object fieldValue = Execute(field).Value;
+                if (obj is KArray)
+                    ((KArray) obj)[(int) fieldValue] = value;
                 else
-                    ThrowHelper.AttributeError($"{tree.Text} is not asignable", StackTrace);
+                {
+                    object real = obj.Value;
+                    Type objType = real.GetType();
+                    MethodInfo info = objType.GetMethod("set_Item");
+                    if (info != null)
+                        info.Invoke(real, new[] {fieldValue, value.Value});
+                    else
+                        ThrowHelper.AttributeError($"{leftExpr.Text} is not asignable", StackTrace);
+                }
             }
         }
 
