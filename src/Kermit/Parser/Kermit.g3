@@ -84,23 +84,12 @@ statementOrNL // Extended statements (include newline)
 	;
 
 statement // Normal statements
-	: equal NL!
-	| 'return' expr NL		-> ^('return' expr)
+	: 'return' expr NL		-> ^('return' expr)
 	| 'if' '(' expr ')' c=soms ('else' el=soms)?			-> ^('if' expr $c $el?)
 	| 'while' '(' expr ')' soms								-> ^('while' expr soms)
 	| 'do' ms=multipleStatements 'while' '(' expr ')'		-> ^(BLOCK $ms ^(WHILE expr $ms))
-	| 'for' '(' beg=equalOrCall ';' cond=expr ';' wh=equalOrCall ')' soms	-> ^('for' $beg $cond $wh soms)
+	| 'for' '(' beg=equalOrId ';' cond=expr ';' wh=equalOrId ')' soms	-> ^('for' $beg $cond $wh soms)
 	| expr NL				-> ^(RPRINT expr)
-	;
-
-equalOrCall
-	: equal
-	| call
-	;
-
-equal
-	: qid '=' expr	-> ^('=' qid expr)
-	| qid ex=('+'|'-'|'*'|'/') '=' expr	-> ^('=' qid ^($ex qid expr))
 	;
 
 refOrExpr
@@ -124,19 +113,35 @@ notOrAtom
 	;
 
 qatom
-	: atom ('.'^ callOrIdArray)* ;
+	: equalOrId | atom ('.'^ callOrIdArray)* ;
 
 atom
 	: '-'? n=(INT|FLOAT) -> ^(NUM $n '-'?)
 	| CHAR
 	| ('true'|'false')
-	| primary ('['^ (INT|STRING) ']'!)?
-	| callOrIdArray
+	| primary ('['^ expr ']'!)?
+	//| call ('['^ el=expr ']'!)?
+	//| callOrIdArray
 	;
+
+equalOrId
+	: qid 
+		(
+			-> qid
+			| {input.LT(-1).Text != ")"}? ('=' expr) -> ^('=' qid expr)
+			| {input.LT(-1).Text != ")"}? ex=('+'|'-'|'*'|'/')  ('=' expr) -> ^('=' qid ^($ex qid expr))
+		)
+	;
+
+qid
+	: callOrIdArray ('.'^ callOrIdArray)*
+	; // Can't be resolved until runtime
 
 primary
 	: STRING
 	| instance
+	| call
+	| ID
 	| '[' (expr (',' expr )*)? ']' -> ^(ARR expr*)
 	| '(' expr ')' -> expr
 	;
@@ -150,7 +155,14 @@ instance
 		-> ^('new' ID expr*)
 	;
 
-callOrIdArray : callOrId ('['^ el=(INT|STRING) ']'!)? ;
+callOrIdArray
+	: call ('['^ el=expr ']'!)?
+	| idArray
+	;
+
+idArray	: ID ('['^ el=expr ']'!)? ;
+
+	//:callOrId ('['^ el=expr ']'!)?;
 
 callOrId : call | ID ;
 
@@ -159,8 +171,6 @@ call
 	$call.tree.Scope = currentScope;
 }
 	: name=ID '(' (refOrExpr (',' refOrExpr)*)? ')' -> ^(CALL ID refOrExpr*) ;
-
-qid :  ID ('.'^ ID)* ('['^ el=(INT|STRING) ']'!)? ; // Can't be resolved until runtime
 
 /*
  * Lexer Rules
