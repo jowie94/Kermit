@@ -25,7 +25,7 @@ namespace Kermit.Parser
             if (e.Token != null && e.Token.Type == EOF)
                 throw new PartialStatement();
             base.ReportError(e);
-            ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
+            throw ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
                 CreateInputError(e.Line, e.CharPositionInLine), GetErrorMessage(e, tokenNames), e);
         }
     }

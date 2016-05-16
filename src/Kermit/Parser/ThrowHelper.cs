@@ -16,10 +16,10 @@ namespace Kermit.Parser
         /// <param name="input">Current input</param>
         /// <param name="varname">Variable name</param>
         /// <param name="inner">Inner exception</param>
-        internal static void AlreadyDefinedArg(string source, int line, string input, string varname, Exception inner)
+        internal static ParserException AlreadyDefinedArg(string source, int line, string input, string varname, Exception inner)
         {
             string msg = "Argument " + varname + " already defined";
-            SyntaxError(source, line, 0, input, msg, inner);
+            return SyntaxError(source, line, 0, input, msg, inner);
         }
 
         /// <summary>
@@ -31,12 +31,12 @@ namespace Kermit.Parser
         /// <param name="input">Current input</param>
         /// <param name="message">Error message</param>
         /// <param name="inner">Inner exception</param>
-        internal static void SyntaxError(string source, int line, int position, string input, string message,
+        internal static ParserException SyntaxError(string source, int line, int position, string input, string message,
             Exception inner)
         {
             string msg =
                 $"File: {source} at line {line}:{position}\n{input}\nSyntaxError: {message}";
-            throw new ParserException(msg, inner);
+            return new ParserException(msg, inner);
         }
     }
 }
