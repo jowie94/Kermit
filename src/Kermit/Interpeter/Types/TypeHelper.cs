@@ -43,13 +43,20 @@ namespace Kermit.Interpeter.Types
         /// <typeparam name="T">The type to be casted</typeparam>
         /// <param name="obj">The object to be casted</param>
         /// <returns>The object casted, an argument exception if the object is null or an interpreter exception if it is not casteable</returns>
-        public static T Cast<T>(KObject obj) where T : KObject
+        public static T Cast<T>(dynamic obj) where T : KObject
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
-            if (obj is T)
+            if (!(obj is KObject))
+                throw new ArgumentException("Object is not a KObject");
+            try
+            {
                 return (T) obj;
-            ThrowHelper.TypeError($"Type {obj.GetType().Name} is not casteable to {typeof(T).Name}");
+            }
+            catch (Exception)
+            {
+                ThrowHelper.TypeError($"Type {obj.GetType().Name} is not casteable to {typeof(T).Name}");
+            }
             return null;
         }
 
