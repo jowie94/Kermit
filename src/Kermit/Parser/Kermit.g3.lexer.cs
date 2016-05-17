@@ -1,5 +1,6 @@
 ﻿using System;
 using Antlr.Runtime;
+using Kermit.Parser.Exceptions;
 
 namespace Kermit.Parser
 {
@@ -18,6 +19,8 @@ namespace Kermit.Parser
 
         public override void ReportError(RecognitionException e)
         {
+            if (e.UnexpectedType == EOF)
+                throw new PartialStatement();
             base.ReportError(e);
             Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine);
             throw ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,

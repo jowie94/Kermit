@@ -206,5 +206,5 @@ FLOAT
 
 SL_COMMENT
 	:   '//' ~('\r'|'\n')* {$channel=Hidden;}
-	|	'/*' ('\w'|'\W')* '*/' {$channel=Hidden;}
+	|	'/*' .* '*/' {$channel=Hidden;}
 	;
