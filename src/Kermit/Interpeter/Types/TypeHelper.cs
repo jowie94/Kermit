@@ -182,8 +182,15 @@ namespace Kermit.Interpeter.Types
                 return ((KNumber) obj).ToInt() != 0;
             if (obj is KChar)
                 return true;
-            ThrowHelper.TypeError($"Can't convert {obj.GetType().Name} to bool");
-            return null;
+            try
+            {
+                return obj.Cast<KBool>(); // If conversion is not known, try to use the internal casting function
+            }
+            catch
+            {
+                ThrowHelper.TypeError($"Can't convert {obj.GetType().Name} to bool");
+                return null;
+            }
         }
     }
 }

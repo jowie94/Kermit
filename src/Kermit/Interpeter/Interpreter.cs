@@ -339,14 +339,20 @@ namespace Kermit.Interpeter
 
             ScopeSpace sp = new ScopeSpace("while", _currentSpace);
             MemorySpace save = _currentSpace;
-            _currentSpace = sp;
-            KBool cond = (KBool) Execute(condition);
-            while (cond)
+            try
             {
-                Execute(code);
-                cond = (KBool) Execute(condition);
+                _currentSpace = sp;
+                KBool cond = Execute(condition).Cast<KBool>();
+                while (cond)
+                {
+                    Execute(code);
+                    cond = Execute(condition).Cast<KBool>();
+                }
             }
-            _currentSpace = save;
+            finally
+            {
+                _currentSpace = save;
+            }
         }
 
         /// <summary>
@@ -362,10 +368,16 @@ namespace Kermit.Interpeter
 
             ScopeSpace sp = new ScopeSpace("while", _currentSpace);
             MemorySpace save = _currentSpace;
-            _currentSpace = sp;
-            for (Execute(begin); (KBool) Execute(condition); Execute(action))
-                Execute(code);
-            _currentSpace = save;
+            try
+            {
+                _currentSpace = sp;
+                for (Execute(begin); (KBool) Execute(condition); Execute(action))
+                    Execute(code);
+            }
+            finally
+            {
+                _currentSpace = save;
+            }
         }
 
         /// <summary>
@@ -402,7 +414,7 @@ namespace Kermit.Interpeter
                 if (function.IsNative)
                 {
                     FunctionCallbackInfo cInfo = new FunctionCallbackInfo(parameters, this);
-                    ((NativeFunctionSymbol)fSymbol).NativeFunction.SafeExecute(cInfo);
+                    ((NativeFunctionSymbol) fSymbol).NativeFunction.SafeExecute(cInfo);
                     result = cInfo.ReturnValue.Value;
                 }
                 else
@@ -412,8 +424,11 @@ namespace Kermit.Interpeter
             {
                 result = returnValue.Value;
             }
-            _stack.Pop();
-            _currentSpace = savedSpace;
+            finally
+            {
+                _stack.Pop();
+                _currentSpace = savedSpace;
+            }
             return result;
         }
 
@@ -705,7 +720,6 @@ namespace Kermit.Interpeter
                 name = field.GetChild(0).Text;
                 FunctionSpace fSpace = new FunctionSpace(new FunctionSymbol(leftExpr.Text + "." + name, GlobalScope));
                 MemorySpace savedSpace = _currentSpace;
-                _currentSpace = fSpace;
                 _stack.Push(fSpace);
                 object[] args = new object[field.ChildCount - 1];
                 for (int i = 0; i < args.Length; ++i)
@@ -713,9 +727,16 @@ namespace Kermit.Interpeter
                     KObject ko = Execute((KermitAST) field.GetChild(i + 1));
                     args[i] = obj is KNativeObject ? ko.Value : ko;
                 }
-                val = obj.CallInnerFunction(name, args);
-                _stack.Pop();
-                _currentSpace = savedSpace;
+                try
+                {
+                    _currentSpace = fSpace;
+                    val = obj.CallInnerFunction(name, args);
+                }
+                finally
+                {
+                    _stack.Pop();
+                    _currentSpace = savedSpace;
+                }
             }
             else
             {
