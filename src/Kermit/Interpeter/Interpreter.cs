@@ -782,13 +782,14 @@ namespace Kermit.Interpeter
             KermitAST leftExpr = (KermitAST)tree.GetChild(0);
             KermitAST field = (KermitAST)tree.GetChild(1);
             KObject obj = Execute(leftExpr);
-            if (tree.Type == KermitParser.DOT)
+            bool isTree = tree.Type == KermitParser.INDEX || field.Type == KermitParser.INDEX;
+            if (field.Type == KermitParser.INDEX)
             {
-                string name = field.Text;
-                if (!obj.SetInnerField(name, value))
-                    ThrowHelper.NoFieldError(obj.Value.GetType().Name, name, StackTrace);
+                obj = obj.GetInnerField(field.GetChild(0).Text);
+                field = (KermitAST) field.GetChild(1);
             }
-            else if (tree.Type == KermitParser.INDEX)
+
+            if (isTree)
             {
                 object fieldValue = Execute(field).Value;
                 if (obj is KArray)
@@ -803,6 +804,12 @@ namespace Kermit.Interpeter
                     else
                         ThrowHelper.AttributeError($"{leftExpr.Text} is not asignable", StackTrace);
                 }
+            }
+            else if (tree.Type == KermitParser.DOT)
+            {
+                string name = field.Text;
+                if (!obj.SetInnerField(name, value))
+                    ThrowHelper.NoFieldError(obj.Value.GetType().Name, name, StackTrace);
             }
         }
 
