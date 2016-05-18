@@ -64,7 +64,10 @@ vardef
 		} catch (System.ArgumentException e)
 		{
 			IToken tok = input.LT(-1);
-			ThrowHelper.AlreadyDefinedArg(SourceName, tok.Line, CreateInputError(tok.Line, tok.CharPositionInLine), $ID.text, e);
+			System.Exception repeated = ThrowHelper.AlreadyDefinedArg(SourceName, tok.Line, tok.CharPositionInLine, input.ToString(), $ID.text, e);
+			ErrorList.Add(repeated);
+			if (StopOnError)
+				throw repeated;
 		}
 	 }
 	;
