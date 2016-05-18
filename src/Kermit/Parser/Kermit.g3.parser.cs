@@ -1,10 +1,15 @@
-﻿using Antlr.Runtime;
+﻿using System;
+using System.Collections.Generic;
+using Antlr.Runtime;
 using Kermit.Parser.Exceptions;
 
 namespace Kermit.Parser
 {
     public partial class KermitParser : Antlr.Runtime.Parser
     {
+        public bool StopOnError = true;
+        public readonly IList<Exception> ErrorList = new List<Exception>();
+
         private string CreateInputError(int line, int pos)
         {
             string[] str = input.ToString().Split('\n');
@@ -23,10 +28,19 @@ namespace Kermit.Parser
                 currentScope = currentScope.EnclosingScope;
             }
             if (e.Token != null && e.Token.Type == EOF)
-                throw new PartialStatement();
+            {
+                PartialStatement error = new PartialStatement();
+                ErrorList.Add(error);
+                if (StopOnError)
+                    throw error;
+                return;
+            }
             base.ReportError(e);
-            throw ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
-                CreateInputError(e.Line, e.CharPositionInLine), GetErrorMessage(e, tokenNames), e);
+            ParserException syntaxError = ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
+                    CreateInputError(e.Line, e.CharPositionInLine), GetErrorMessage(e, tokenNames), e);
+            ErrorList.Add(syntaxError);
+            if (StopOnError)
+                throw syntaxError;
         }
     }
 }
