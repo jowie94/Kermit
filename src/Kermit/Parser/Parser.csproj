@@ -52,6 +52,7 @@
     <Compile Include="IParserErrorReporter.cs" />
     <Compile Include="IScope.cs" />
     <Compile Include="Kermit.g3.lexer.cs" />
+    <Compile Include="KermitAdaptor.cs" />
     <Compile Include="KermitErrorNode.cs" />
     <Compile Include="Kermit.g3.parser.cs" />
     <Compile Include="KermitAST.cs" />
