@@ -48,7 +48,8 @@ functionDefinition
 	 {
 		fs.BlockAst = $multipleStatements.tree;
 		currentScope = currentScope.EnclosingScope;
-		currentScope = currentScope.EnclosingScope;
+		if (currentScope != null)
+			currentScope = currentScope.EnclosingScope;
 	 }
 	 ->
 	;
@@ -66,8 +67,10 @@ vardef
 			IToken tok = input.LT(-1);
 			System.Exception repeated = ThrowHelper.AlreadyDefinedArg(SourceName, tok.Line, tok.CharPositionInLine, input.ToString(), $ID.text, e);
 			ErrorList.Add(repeated);
-			if (StopOnError)
+			if (StopOnError) {
+				currentScope = currentScope.EnclosingScope;
 				throw repeated;
+			}
 		}
 	 }
 	;
@@ -78,7 +81,7 @@ soms // Single or multiple statements
 	;
 
 multipleStatements
-	: NL* '{' statementOrNL* '}' NL*	-> ^(BLOCK statementOrNL*)
+	: NL* '{' statementOrNL* '}'	-> ^(BLOCK statementOrNL*)
 	;
 
 statementOrNL // Extended statements (include newline)
@@ -128,7 +131,7 @@ atom
 	;
 
 equalOrId
-	: qid 
+	: qid
 		(
 			-> qid
 			| {input.LT(-1).Text != ")"}? ('=' expr) -> ^('=' qid expr)
