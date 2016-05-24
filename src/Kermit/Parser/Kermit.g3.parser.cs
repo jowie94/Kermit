@@ -37,7 +37,7 @@ namespace Kermit.Parser
             }
             base.ReportError(e);
             ParserException syntaxError = ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
-                    CreateInputError(e.Line, e.CharPositionInLine), GetErrorMessage(e, tokenNames), e);
+                    input.ToString(), GetErrorMessage(e, tokenNames), e);
             ErrorList.Add(syntaxError);
             if (StopOnError)
                 throw syntaxError;

@@ -22,9 +22,9 @@ namespace Kermit.Parser
             if (e.UnexpectedType == EOF)
                 throw new PartialStatement();
             base.ReportError(e);
-            Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine);
+            //Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine);
             throw ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
-                CreateInputError(e.Line, e.CharPositionInLine), "Invalid syntax", e);
+                input.ToString(), "Invalid syntax", e);
         }
     }
 }

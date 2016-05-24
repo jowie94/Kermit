@@ -27,6 +27,7 @@ namespace Kermit.Parser.Exceptions
             return $"File: {sourceName} at line {line}:{position}\n{CreateInputError(line, position, input)}\n{message}";
         }
 
+        [Obsolete]
         public ParserException(string msg, Exception inner) : base(msg, inner) {}
 
         public ParserException(string sourceName, int line, int position, string input, string message,
