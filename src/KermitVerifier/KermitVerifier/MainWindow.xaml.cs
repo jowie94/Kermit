@@ -67,10 +67,6 @@ namespace KermitVerifier
             {
                 errors.Add("Partial statement");
             }
-            catch (ParserException)
-            {
-                errors.Add("Parser exception");
-            }
 
             if (parser.NumberOfSyntaxErrors != 0)
                 errors.Add($"{parser.NumberOfSyntaxErrors} syntax error(s)");
