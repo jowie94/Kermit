@@ -704,7 +704,7 @@ namespace Kermit.Interpeter
                 for (int i = 0; i < args.Length; ++i)
                 {
                     KObject ko = Execute((KermitAST) field.GetChild(i + 1));
-                    args[i] = obj is KNativeObject ? ko.Value : ko;
+                    args[i] = obj is KArray ? ko : ko.Value;
                 }
                 try
                 {
