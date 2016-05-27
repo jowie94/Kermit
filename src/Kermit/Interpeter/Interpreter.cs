@@ -405,9 +405,9 @@ namespace Kermit.Interpeter
             }
             finally
             {
-                _stack.Pop();
                 _currentSpace = savedSpace;
             }
+            _stack.Pop();
             return result;
         }
 
