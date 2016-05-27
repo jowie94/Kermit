@@ -49,6 +49,8 @@
     <Compile Include="FunctionCallbackInfo.cs" />
     <Compile Include="GlobalScope.cs" />
     <Compile Include="InternalFunctions\PrintFunctions.cs" />
+    <Compile Include="InternalFunctions\PrintMethods.cs" />
+    <Compile Include="InternalFunctions\PrintProperties.cs" />
     <Compile Include="InternalFunctions\PrintStackTrace.cs" />
     <Compile Include="InternalFunctions\ReadLine.cs" />
     <Compile Include="Exceptions\ThrowHelper.cs" />

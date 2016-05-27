@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -49,6 +50,10 @@ namespace Kermit.Interpeter.Types
         public bool IsString => Is<KString>();
 
         public bool IsNative => Is<KNativeObject>();
+
+        public virtual IList<string> Methods => GetValue().GetType().GetMethods().Select(FormatMethod).ToList();
+
+        public virtual IList<string> Properties => GetValue().GetType().GetProperties().Select(x => $"{x.PropertyType.Name} {x.Name}").ToList();
 
         /// <summary>
         /// Generic Type checker
@@ -154,6 +159,12 @@ namespace Kermit.Interpeter.Types
             if (info.ReturnType == typeof(void))
                 return new KVoid();
             return TypeHelper.ToKObject(ret);
+        }
+
+        protected static string FormatMethod(MethodInfo method)
+        {
+            return
+                $"{method.ReturnType.Name} {method.Name}({string.Join(",", method.GetParameters().Select(x => x.ParameterType.Name))})";
         }
 
         /// <summary>
