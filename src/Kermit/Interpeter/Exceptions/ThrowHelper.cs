@@ -65,7 +65,7 @@ namespace Kermit.Interpeter.Exceptions
         /// <param name="e">Exception thrown</param>
         internal static void NativeFunctionError(string name, Exception e)
         {
-            InterpreterException($"NativeError: {e.GetType().Name} thrown by {name}:\nMessage: {e.Message}", e);
+            InterpreterException($"[NE] {e.GetType().Name} thrown by {name}:\n{e.Message}", e);
         }
 
         /// <summary>
