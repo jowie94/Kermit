@@ -411,6 +411,19 @@ namespace Kermit.Interpeter
             return result;
         }
 
+        public override void LoadScript(string path)
+        {
+            ANTLRFileStream fileStream = new ANTLRFileStream(path);
+            try
+            {
+                Interpret(fileStream);
+            }
+            catch (PartialStatement e)
+            {
+                throw e.InnerException;
+            }
+        }
+
         /// <summary>
         /// Call a function
         /// </summary>

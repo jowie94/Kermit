@@ -4,6 +4,6 @@ namespace Kermit.Parser.Exceptions
 {
     public class PartialStatement : Exception
     {
-        public PartialStatement() : base("Partial statement") {}
+        public PartialStatement(ParserException parserException) : base("Partial statement", parserException) {}
     }
 }

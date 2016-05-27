@@ -19,12 +19,13 @@ namespace Kermit.Parser
 
         public override void ReportError(RecognitionException e)
         {
+            ParserException syntaxError = ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
+                input.ToString(), "Invalid syntax", e);
             if (e.UnexpectedType == EOF)
-                throw new PartialStatement();
+                throw new PartialStatement(syntaxError);
             base.ReportError(e);
             //Console.WriteLine("Error in lexer at line " + e.Line + ":" + e.CharPositionInLine);
-            throw ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
-                input.ToString(), "Invalid syntax", e);
+            throw syntaxError;
         }
     }
 }

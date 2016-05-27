@@ -71,6 +71,12 @@ namespace Kermit.Interpeter
         /// <returns>The result of the call</returns>
         public abstract KObject CallFunction(KFunction function, List<KLocal> parameters);
 
+        /// <summary>
+        /// Load a script into the interpreter and execute it
+        /// </summary>
+        /// <param name="path">Path to the script</param>
+        public abstract void LoadScript(string path);
+
         protected IInterpreterListener Listener
         {
             get { return _listener; }

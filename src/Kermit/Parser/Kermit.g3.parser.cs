@@ -27,17 +27,17 @@ namespace Kermit.Parser
                 currentScope = currentScope.EnclosingScope;
                 currentScope = currentScope.EnclosingScope;
             }
+            ParserException syntaxError = ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
+                    input.ToString(), GetErrorMessage(e, tokenNames), e);
             if (e.Token != null && e.Token.Type == EOF)
             {
-                PartialStatement error = new PartialStatement();
+                PartialStatement error = new PartialStatement(syntaxError);
                 ErrorList.Add(error);
                 if (StopOnError)
                     throw error;
                 return;
             }
             base.ReportError(e);
-            ParserException syntaxError = ThrowHelper.SyntaxError(SourceName, e.Line, e.CharPositionInLine,
-                    input.ToString(), GetErrorMessage(e, tokenNames), e);
             ErrorList.Add(syntaxError);
             if (StopOnError)
                 throw syntaxError;
