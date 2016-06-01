@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Kermit.Interpeter.Exceptions;
 
 namespace Kermit.Interpeter.Types
 {
@@ -155,7 +156,15 @@ namespace Kermit.Interpeter.Types
             MethodInfo info = obj.GetType().GetMethod(name, types);
             if (info == null)
                 return null;
-            object ret = info.Invoke(obj, parameters);
+            object ret = null;
+            try
+            {
+                ret = info.Invoke(obj, parameters);
+            }
+            catch (TargetInvocationException e)
+            {
+                ThrowHelper.InterpreterException("Exception thrown by inner call\n" + e.InnerException.Message, e.InnerException);
+            }
             if (info.ReturnType == typeof(void))
                 return new KVoid();
             return TypeHelper.ToKObject(ret);
