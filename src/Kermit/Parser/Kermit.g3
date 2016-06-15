@@ -10,7 +10,7 @@ options {
 tokens {
 	BLOCK; ARGS; CALL; DOT='.'; REF='ref'; INDEX='['; ARR; RPRINT;
 	FUNC='function'; RETURN='return'; IF='if'; WHILE='while'; FOR='for'; NEW='new'; // Keywords
-	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical (TODO: Add more logical tokens)
+	EQ='=='; LT='<'; BT='>'; LTE='<='; BTE='>='; NE='!='; TRUE='true'; FALSE='false'; // Logical
 	NUM; ASSIGN='='; ADD='+'; SUB='-'; MUL='*'; DIV='/'; // Arithmetics
 }
 
@@ -146,8 +146,8 @@ qid
 primary
 	: STRING
 	| instance
-	| call
-	| ID
+	//| call
+	//| ID
 	| '[' (expr (',' expr )*)? ']' -> ^(ARR expr*)
 	| '(' expr ')' -> expr
 	;
@@ -186,7 +186,7 @@ WS		:   (' '|'\t') {$channel=Hidden;};
 
 NL		:	'\r'? '\n' ;
 
-ID		:   LETTER (LETTER | '0'..'9' | '-' | '_')*  ;
+ID		:   (LETTER | '_') (LETTER | '0'..'9' | '_')*  ;
 
 fragment
 LETTER
