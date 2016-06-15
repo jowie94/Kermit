@@ -123,7 +123,7 @@ namespace Kermit.Interpeter
         /// Execute the input stream
         /// </summary>
         /// <param name="input">Input stream to be executed</param>
-        public void Interpret(ANTLRStringStream input)
+        public void InterpretAntlrStream(ANTLRStringStream input)
         {
             KermitLexer lexer = new KermitLexer(input);
             TokenRewriteStream tokens = new TokenRewriteStream(lexer);
@@ -172,14 +172,20 @@ namespace Kermit.Interpeter
             }
         }
 
+        public void InterpretLine(string input)
+        {
+            ANTLRStringStream stream = new ANTLRStringStream(input + "\n", "<stdin>");
+            InterpretAntlrStream(stream);
+        }
+
         /// <summary>
         /// Execute the input string
         /// </summary>
         /// <param name="input">Input string with commands to be executed</param>
-        public void Interpret(string input)
+        public void InterpretBlock(string input)
         {
             ANTLRStringStream stream = new ANTLRStringStream(input, "<stdin>");
-            Interpret(stream);
+            InterpretAntlrStream(stream);
         }
         // ReSharper restore MemberCanBePrivate.Global
 
@@ -416,7 +422,7 @@ namespace Kermit.Interpeter
             ANTLRFileStream fileStream = new ANTLRFileStream(path);
             try
             {
-                Interpret(fileStream);
+                InterpretAntlrStream(fileStream);
             }
             catch (PartialStatement e)
             {

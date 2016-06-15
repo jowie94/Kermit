@@ -76,7 +76,7 @@ namespace Terminal
                 }
                 try
                 {
-                    interpreter.Interpret(input);
+                    interpreter.InterpretBlock(input);
                     input = "";
                 }
                 catch (PartialStatement) {}
