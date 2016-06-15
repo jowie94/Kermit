@@ -1,6 +1,6 @@
 ﻿namespace Kermit.Interpeter
 {
-    internal class GlobalScope : ComitableScope
+    internal class GlobalScope : CommitableScope
     {
         /// <summary>
         /// Represents the global scope

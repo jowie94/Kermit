@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComitableScope.cs" />
+    <Compile Include="CommitableScope.cs" />
     <Compile Include="FunctionCallbackInfo.cs" />
     <Compile Include="GlobalScope.cs" />
     <Compile Include="InternalFunctions\Load.cs" />

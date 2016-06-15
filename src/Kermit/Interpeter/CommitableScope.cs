@@ -7,13 +7,13 @@ namespace Kermit.Interpeter
     /// <summary>
     /// Represents a comitable scope that can be commited or reverted
     /// </summary>
-    internal abstract class ComitableScope : BaseScope
+    internal abstract class CommitableScope : BaseScope
     {
         private readonly IDictionary<string, Symbol> _tmpSymbols = new Dictionary<string, Symbol>();
 
         public override Symbol[] SymbolList => base.SymbolList.Concat(_tmpSymbols.Values).ToArray();
 
-        protected ComitableScope(IScope parent) : base(parent) {}
+        protected CommitableScope(IScope parent) : base(parent) {}
 
         public void CommitScope()
         {
